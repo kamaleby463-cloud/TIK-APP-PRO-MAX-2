@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -50,11 +51,12 @@
         .text-primary { color: var(--primary); transition: color 0.3s; }
         .border-primary { border-color: var(--primary); transition: border-color 0.3s; }
 
-        ::-webkit-scrollbar { width: 6px; }
+        /* تعديل السكرول بار ليدعم التمرير الأفقي أيضاً بشكل جميل */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
 
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
 
         .support-option input:checked + div {
@@ -184,7 +186,9 @@
             <div id="result" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-10 animate-fade-up">
                 <div id="media-preview" class="bg-black rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl relative h-[450px] lg:h-[550px] group flex items-center justify-center">
                     <video id="preview-video" class="w-full h-full object-contain bg-black/50 hidden" controls playsinline></video>
-                    <div id="preview-images" class="w-full h-full overflow-y-auto p-6 hidden grid grid-cols-2 gap-4 custom-scrollbar bg-[#050505]">
+                    
+                    <!-- تم التعديل هنا: تحويل العرض إلى شريط تمرير أفقي (Slider) -->
+                    <div id="preview-images" class="w-full h-full overflow-x-auto overflow-y-hidden hidden flex snap-x snap-mandatory custom-scrollbar bg-[#050505] scroll-smooth">
                         <!-- Images generated here -->
                     </div>
                 </div>
@@ -404,7 +408,6 @@
             if(selectedRate === 0) return;
             localStorage.setItem('app_rated', 'true');
             document.getElementById('rating-modal').classList.add('hidden');
-            // Show a small toast or just close
         }
 
         /* Support Modal Functions */
@@ -482,17 +485,24 @@
             if (data.images && data.images.length > 0) {
                 imagesPreview.classList.remove('hidden');
                 imagesPreview.innerHTML = '';
+                
+                // تم التعديل هنا: إضافة الصور كعناصر يمكن التمرير بينها (Slider)
                 data.images.forEach((img, i) => {
                     const div = document.createElement('div');
-                    div.className = 'relative rounded-2xl overflow-hidden border border-white/5 bg-white/5 aspect-square';
-                    div.innerHTML = `<img src="${img}" class="w-full h-full object-cover">
-                                     <a href="${img}" target="_blank" onclick="handleDownload()" class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 hover:opacity-100 transition-opacity font-bold text-[10px]">تحميل</a>`;
+                    div.className = 'relative flex-none w-full h-full snap-center bg-[#050505] flex items-center justify-center group';
+                    div.innerHTML = `
+                        <img src="${img}" class="w-full h-full object-contain p-2">
+                        <a href="${img}" target="_blank" onclick="handleDownload()" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-all font-black text-white text-xl backdrop-blur-sm gap-3">
+                            <i class="fa-solid fa-circle-down text-4xl text-primary animate-bounce"></i>
+                            تحميل هذه الصورة
+                        </a>
+                    `;
                     imagesPreview.appendChild(div);
                 });
 
                 downloadBox.innerHTML = `
                     <div class="p-4 bg-primary/10 rounded-2xl text-center border border-primary/20 mb-2">
-                        <p class="text-primary font-bold text-sm">تم العثور على ${data.images.length} صورة</p>
+                        <p class="text-primary font-bold text-sm">اسحب لليمين واليسار لرؤية ${data.images.length} صور</p>
                     </div>
                     <a href="${data.music}" target="_blank" onclick="handleDownload()" class="w-full bg-white/5 border border-white/10 text-white font-black py-5 rounded-[1.8rem] flex items-center justify-center gap-3 hover:bg-white/10 transition-all active:scale-95">
                         <i class="fa-solid fa-music text-primary"></i>
@@ -531,3 +541,5 @@
 </body>
 </html>
 
+
+```

@@ -51,7 +51,6 @@
         .text-primary { color: var(--primary); transition: color 0.3s; }
         .border-primary { border-color: var(--primary); transition: border-color 0.3s; }
 
-        /* تعديل السكرول بار ليدعم التمرير الأفقي أيضاً بشكل جميل */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
@@ -64,7 +63,6 @@
             background-color: rgba(219, 39, 119, 0.1);
         }
 
-        /* Rating Stars Style */
         .star-rating i {
             cursor: pointer;
             transition: transform 0.2s, color 0.2s;
@@ -128,7 +126,6 @@
                         <span class="text-[10px] font-black uppercase">الدعم الفني</span>
                     </button>
 
-                    <!-- تقييم الناس المضاف -->
                     <div class="hidden md:flex items-center gap-1.5 bg-white/5 px-3 py-2 rounded-xl border border-white/5">
                         <i class="fa-solid fa-star text-amber-500 text-[10px]"></i>
                         <span class="text-[11px] font-black text-white">4.9/5</span>
@@ -187,7 +184,6 @@
                 <div id="media-preview" class="bg-black rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl relative h-[450px] lg:h-[550px] group flex items-center justify-center">
                     <video id="preview-video" class="w-full h-full object-contain bg-black/50 hidden" controls playsinline></video>
                     
-                    <!-- تم التعديل هنا: تحويل العرض إلى شريط تمرير أفقي (Slider) -->
                     <div id="preview-images" class="w-full h-full overflow-x-auto overflow-y-hidden hidden flex snap-x snap-mandatory custom-scrollbar bg-[#050505] scroll-smooth">
                         <!-- Images generated here -->
                     </div>
@@ -209,51 +205,43 @@
             </div>
         </main>
 
-        <footer class="py-12 text-center space-y-4 border-t border-white/5 mt-10">
-            <p class="text-[10px] font-black uppercase tracking-[0.5em] text-gray-500">Developed With Passion By</p>
-            <p class="text-white font-black text-xl tracking-widest italic flex items-center gap-3 justify-center uppercase">
-                KAMAL <span class="text-primary">DEVELOPER</span>
-            </p>
+        <footer class="py-12 border-t border-white/5 mt-10 flex flex-col items-center">
+            <!-- اسم المطور أولاً -->
+            <div class="text-center space-y-3 mb-10">
+                <p class="text-[10px] font-black uppercase tracking-[0.5em] text-gray-500">Developed With Passion By</p>
+                <p class="text-white font-black text-xl tracking-widest italic flex items-center gap-3 justify-center uppercase">
+                    KAMAL <span class="text-primary">DEVELOPER</span>
+                </p>
+            </div>
+
+            <!-- روابط المتابعة بالأسفل (FOLLOW Syntax) حسب طلبك وتصميم الصورة -->
+            <div class="w-full flex flex-col items-center">
+                <h3 class="text-2xl font-black italic text-white mb-2 tracking-widest uppercase" style="font-family: Arial, sans-serif;">FOLLOW Syntax</h3>
+                <p class="text-[#a1a1aa] text-xs mb-6 text-center font-medium opacity-70">انضم إلينا لمتابعة آخر التحديثات</p>
+                
+                <div class="flex flex-wrap justify-center gap-3 px-4 max-w-2xl" dir="ltr">
+                    <a href="https://www.tiktok.com/@hhfufjdg?_r=1&_t=ZS-95QZFA0UgDs" target="_blank" class="flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-transparent border border-white/20 hover:bg-white/10 hover:border-white/40 transition-all shadow-lg">
+                        <i class="fa-brands fa-tiktok text-white text-lg"></i>
+                        <span class="text-white font-bold text-sm tracking-wide">TikTok</span>
+                    </a>
+                    
+                    <a href="https://t.me/K_Develope" target="_blank" class="flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-transparent border border-white/20 hover:bg-white/10 hover:border-white/40 transition-all shadow-lg">
+                        <i class="fa-brands fa-telegram text-white text-lg"></i>
+                        <span class="text-white font-bold text-sm tracking-wide">Telegram</span>
+                    </a>
+
+                    <a href="https://youtube.com/@kamaleby?si=WWzj-i1lbWGLLdH-" target="_blank" class="flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-transparent border border-white/20 hover:bg-white/10 hover:border-white/40 transition-all shadow-lg">
+                        <i class="fa-brands fa-youtube text-white text-lg"></i>
+                        <span class="text-white font-bold text-sm tracking-wide">YouTube</span>
+                    </a>
+
+                    <a href="https://www.facebook.com/share/1FURqAHAeH/" target="_blank" class="flex items-center gap-2.5 px-6 py-2.5 rounded-full bg-transparent border border-white/20 hover:bg-white/10 hover:border-white/40 transition-all shadow-lg">
+                        <i class="fa-brands fa-facebook-f text-white text-lg"></i>
+                        <span class="text-white font-bold text-sm tracking-wide">Facebook</span>
+                    </a>
+                </div>
+            </div>
         </footer>
-    </div>
-
-    <!-- Modal المتابعة -->
-    <div id="sub-modal" class="fixed inset-0 z-[200] bg-black/90 backdrop-blur-xl hidden flex-col items-center justify-center p-4">
-        <div id="modal-step-1" class="bg-[#0f0f0f] border border-white/10 p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full text-center relative animate-fade-up">
-            <div class="absolute -inset-10 bg-primary opacity-10 rounded-full blur-3xl"></div>
-            <div class="relative z-10 flex flex-col items-center gap-5">
-                <div class="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center border border-primary/30">
-                    <i class="fa-brands fa-tiktok text-4xl text-primary animate-pulse"></i>
-                </div>
-                <h3 class="text-2xl font-black text-white">دعم المطور كمال</h3>
-                <p class="text-gray-400 text-sm leading-relaxed font-medium">مرحباً بك! اختر الطريقة التي تفضلها للدخول إلى التطبيق.</p>
-                <div class="w-full space-y-3 mt-2">
-                    <button onclick="goToTikTok()" class="w-full bg-primary text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 transition-all hover:brightness-110 active:scale-95 shadow-lg shadow-primary/30">
-                        <i class="fa-brands fa-tiktok"></i>
-                        <span>متابعة المطور (دعم)</span>
-                    </button>
-                    <button onclick="showThanks()" class="w-full bg-white/10 text-white font-bold py-4 rounded-2xl flex items-center justify-center transition-all hover:bg-white/20 active:scale-95 border border-white/5">
-                        <span>الدخول المباشر</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div id="modal-thanks" class="hidden bg-[#0f0f0f] border border-white/10 p-10 rounded-[3rem] shadow-2xl max-w-sm w-full text-center relative animate-fade-up">
-            <div class="relative z-10 flex flex-col items-center gap-8">
-                <div class="w-24 h-24 bg-[#22c55e] rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(34,197,94,0.3)]">
-                    <i class="fa-solid fa-heart text-4xl text-white"></i>
-                </div>
-                <div class="space-y-4">
-                    <h3 class="text-4xl font-black text-white italic tracking-tight uppercase">شكراً جزيلاً!</h3>
-                    <p class="text-gray-400 font-bold text-base italic underline decoration-primary underline-offset-4">نتمنى لك تجربة ممتعة.</p>
-                </div>
-                <button onclick="closeSubModal()" class="w-full bg-white text-black font-black py-5 rounded-2xl flex items-center justify-center gap-4 transition-all hover:bg-primary hover:text-white active:scale-95 shadow-xl text-lg mt-4 group">
-                    <span>دخول إلى التطبيق</span>
-                    <i class="fa-solid fa-right-to-bracket"></i>
-                </button>
-            </div>
-        </div>
     </div>
 
     <!-- Modal الدعم الفني -->
@@ -299,7 +287,7 @@
         </div>
     </div>
 
-    <!-- Modal التقييم (يظهر مرة واحدة بعد التحميل) -->
+    <!-- Modal التقييم -->
     <div id="rating-modal" class="fixed inset-0 z-[220] bg-black/95 backdrop-blur-xl hidden flex-col items-center justify-center p-4">
         <div class="bg-[#0f0f0f] border border-white/10 p-10 rounded-[3rem] shadow-2xl max-w-sm w-full text-center relative animate-fade-up">
             <div class="absolute -inset-10 bg-amber-500 opacity-10 rounded-full blur-3xl"></div>
@@ -340,48 +328,16 @@
                 setTimeout(() => {
                     splash.style.display = 'none';
                     document.getElementById('app').classList.remove('hidden');
-                    checkSub();
                 }, 1000);
             }, 3000); 
         });
 
-        // مراقب العودة من التحميل للتقييم
         window.onfocus = function() {
             if (hasTriggeredDownload && localStorage.getItem('app_rated') !== 'true') {
                 setTimeout(openRatingModal, 800);
             }
         };
 
-        function checkSub() {
-            if (localStorage.getItem('is_follower_forever') !== 'true') {
-                const modal = document.getElementById('sub-modal');
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-            }
-        }
-
-        function goToTikTok() {
-            const tiktokUrl = "https://www.tiktok.com/@hhfufjdg?_r=1&_t=ZS-94wZTxmoJjJ";
-            const deepLink = "snssdk1233://user/profile/7054817757989356549";
-            window.location.href = deepLink;
-            setTimeout(() => {
-                window.open(tiktokUrl, '_blank');
-                showThanks();
-            }, 1000);
-        }
-
-        function showThanks() {
-            document.getElementById('modal-step-1').classList.add('hidden');
-            document.getElementById('modal-thanks').classList.remove('hidden');
-            document.getElementById('modal-thanks').classList.add('block');
-        }
-
-        function closeSubModal() {
-            localStorage.setItem('is_follower_forever', 'true');
-            document.getElementById('sub-modal').classList.add('hidden');
-        }
-
-        /* Rating Logic */
         function openRatingModal() {
             if(localStorage.getItem('app_rated') === 'true') return;
             const modal = document.getElementById('rating-modal');
@@ -410,7 +366,6 @@
             document.getElementById('rating-modal').classList.add('hidden');
         }
 
-        /* Support Modal Functions */
         function openSupportModal() {
             const modal = document.getElementById('support-modal');
             modal.classList.remove('hidden');
@@ -486,7 +441,6 @@
                 imagesPreview.classList.remove('hidden');
                 imagesPreview.innerHTML = '';
                 
-                // تم التعديل هنا: إضافة الصور كعناصر يمكن التمرير بينها (Slider)
                 data.images.forEach((img, i) => {
                     const div = document.createElement('div');
                     div.className = 'relative flex-none w-full h-full snap-center bg-[#050505] flex items-center justify-center group';
@@ -542,4 +496,3 @@
 </html>
 
 
-```

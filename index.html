@@ -1,5 +1,4 @@
 
-<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -104,7 +103,7 @@
         </div>
     </div>
 
-    <!-- Modal الترويج للتطبيق الجديد -->
+    <!-- Modal الترويج للتطبيق الجديد (يظهر مرة واحدة فقط) -->
     <div id="promo-modal" class="fixed inset-0 z-[150] bg-black/95 backdrop-blur-2xl hidden flex-col items-center justify-center p-6">
         <div class="bg-gradient-to-b from-[#111] to-black border border-white/10 p-10 rounded-[3rem] shadow-2xl max-w-sm w-full text-center relative animate-fade-up">
             <div class="absolute -inset-10 bg-primary opacity-10 rounded-full blur-3xl"></div>
@@ -121,11 +120,11 @@
                     </p>
                 </div>
                 <div class="w-full space-y-3">
-                    <a href="https://kamaleby463-cloud.github.io/Who-will-win-one-million-ounces-/" target="_blank" class="w-full bg-primary text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 transition-all hover:brightness-110 active:scale-95 shadow-lg shadow-primary/30 block">
+                    <a href="https://kamaleby463-cloud.github.io/Who-will-win-one-million-ounces-/" target="_blank" onclick="closePromoModalPermanent()" class="w-full bg-primary text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 transition-all hover:brightness-110 active:scale-95 shadow-lg shadow-primary/30 block">
                         <i class="fa-solid fa-play"></i>
                         <span>جربه الآن مجاناً</span>
                     </a>
-                    <button onclick="closePromoModal()" class="w-full bg-white/5 text-gray-400 font-bold py-3 rounded-2xl transition-all hover:bg-white/10 active:scale-95">
+                    <button onclick="closePromoModalPermanent()" class="w-full bg-white/5 text-gray-400 font-bold py-3 rounded-2xl transition-all hover:bg-white/10 active:scale-95">
                         لا شكراً
                     </button>
                 </div>
@@ -154,12 +153,6 @@
                         <i class="fa-solid fa-headset text-sm"></i>
                         <span class="text-[10px] font-black uppercase">الدعم الفني</span>
                     </button>
-
-                    <div class="hidden md:flex items-center gap-1.5 bg-white/5 px-3 py-2 rounded-xl border border-white/5">
-                        <i class="fa-solid fa-star text-amber-500 text-[10px]"></i>
-                        <span class="text-[11px] font-black text-white">4.9/5</span>
-                        <span class="text-[9px] text-gray-500 font-bold">(12k تقييم)</span>
-                    </div>
                 </div>
                 <button onclick="toggleTheme()" class="p-2 bg-white/5 text-primary rounded-full border border-white/10 px-4 flex items-center gap-2 hover:bg-white/10 transition-all">
                     <i class="fa-solid fa-palette"></i>
@@ -168,22 +161,10 @@
             </div>
         </nav>
 
-        <main class="max-w-4xl mx-auto px-6 py-12">
-            <!-- Header Section -->
-            <div class="mb-12 flex flex-col md:flex-row md:items-end md:justify-between gap-6 text-right">
-                <div class="animate-fade-up">
-                    <h2 class="text-4xl font-black mb-2 italic tracking-tight">محمل الفيديوهات والصور</h2>
-                    <p class="text-gray-500 text-sm font-medium">تجربة تنزيل سينمائية للوسائط بدون علامة مائية.</p>
-                </div>
-                <div class="inline-flex items-center gap-3 bg-white/5 px-5 py-3 rounded-2xl border border-white/5 hover:bg-white/10 transition-colors group w-max">
-                    <div class="p-2 bg-primary/10 rounded-xl group-hover:rotate-12 transition-transform">
-                        <i class="fa-solid fa-code text-primary"></i>
-                    </div>
-                    <div class="flex flex-col items-start">
-                        <span class="text-[9px] font-black text-gray-500 uppercase">Lead Developer</span>
-                        <span class="text-sm font-bold text-white">المطور كمال</span>
-                    </div>
-                </div>
+        <main class="max-w-4xl mx-auto px-6 py-12 text-center">
+            <div class="mb-12 animate-fade-up">
+                <h2 class="text-4xl font-black mb-2 italic tracking-tight text-right">محمل الفيديوهات والصور</h2>
+                <p class="text-gray-500 text-sm font-medium text-right">تجربة تنزيل سينمائية للوسائط بدون علامة مائية.</p>
             </div>
 
             <!-- Input Box -->
@@ -203,7 +184,7 @@
                 </div>
             </div>
 
-            <div id="error-msg" class="hidden p-6 bg-red-500/10 border border-red-500/20 rounded-3xl items-center gap-4 text-red-400 mb-10 text-right transition-all">
+            <div id="error-msg" class="hidden p-6 bg-red-500/10 border border-red-500/20 rounded-3xl items-center gap-4 text-red-400 mb-10 text-right">
                 <i class="fa-solid fa-triangle-exclamation text-2xl flex-shrink-0"></i>
                 <p id="error-text" class="font-bold text-sm sm:text-base"></p>
             </div>
@@ -212,10 +193,7 @@
             <div id="result" class="hidden grid grid-cols-1 lg:grid-cols-2 gap-10 animate-fade-up">
                 <div id="media-preview" class="bg-black rounded-[3rem] border border-white/10 overflow-hidden shadow-2xl relative h-[450px] lg:h-[550px] group flex items-center justify-center">
                     <video id="preview-video" class="w-full h-full object-contain bg-black/50 hidden" controls playsinline></video>
-                    
-                    <div id="preview-images" class="w-full h-full overflow-x-auto overflow-y-hidden hidden flex snap-x snap-mandatory custom-scrollbar bg-[#050505] scroll-smooth">
-                        <!-- Images generated here -->
-                    </div>
+                    <div id="preview-images" class="w-full h-full overflow-x-auto overflow-y-hidden hidden flex snap-x snap-mandatory custom-scrollbar bg-[#050505] scroll-smooth"></div>
                 </div>
 
                 <div class="bg-[#0a0a0a] border border-white/10 p-8 sm:p-10 rounded-[3rem] flex flex-col justify-between shadow-2xl relative overflow-hidden text-right">
@@ -226,49 +204,22 @@
                             <p id="author-name" class="text-primary font-black text-sm" dir="ltr"></p>
                         </div>
                     </div>
-
-                    <div id="download-box" class="space-y-4">
-                        <!-- Download buttons generated here -->
-                    </div>
+                    <div id="download-box" class="space-y-4"></div>
                 </div>
             </div>
         </main>
 
-        <footer class="py-6 border-t border-white/5 mt-6 flex flex-col items-center">
-            <!-- اسم المطور -->
-            <div class="text-center space-y-1 mb-6">
+        <footer class="py-12 border-t border-white/5 flex flex-col items-center gap-6">
+            <div class="text-center space-y-1">
                 <p class="text-[9px] font-black uppercase tracking-[0.4em] text-gray-500">Developed By</p>
-                <p class="text-white font-black text-lg tracking-widest italic flex items-center gap-2 justify-center uppercase">
+                <p class="text-white font-black text-xl tracking-widest italic flex items-center gap-2 justify-center uppercase">
                     KAMAL <span class="text-primary">DEVELOPER</span>
                 </p>
             </div>
-
-            <!-- روابط المتابعة -->
-            <div class="w-full flex flex-col items-center">
-                <h3 class="text-lg font-black italic text-white mb-1 tracking-widest uppercase" style="font-family: Arial, sans-serif;">FOLLOW Syntax</h3>
-                <p class="text-[#a1a1aa] text-[10px] mb-4 text-center font-medium opacity-60 uppercase">Stay Connected</p>
-                
-                <div class="flex flex-wrap justify-center gap-2 px-4 max-w-2xl" dir="ltr">
-                    <a href="https://www.tiktok.com/@hhfufjdg?_r=1&_t=ZS-95QZFA0UgDs" target="_blank" class="flex items-center gap-2 px-5 py-2 rounded-full bg-transparent border border-white/10 hover:bg-white/5 hover:border-white/30 transition-all">
-                        <i class="fa-brands fa-tiktok text-white text-base"></i>
-                        <span class="text-white font-bold text-[11px] tracking-wide">TikTok</span>
-                    </a>
-                    
-                    <a href="https://t.me/K_Develope" target="_blank" class="flex items-center gap-2 px-5 py-2 rounded-full bg-transparent border border-white/10 hover:bg-white/5 hover:border-white/30 transition-all">
-                        <i class="fa-brands fa-telegram text-white text-base"></i>
-                        <span class="text-white font-bold text-[11px] tracking-wide">Telegram</span>
-                    </a>
-
-                    <a href="https://youtube.com/@kamaleby?si=WWzj-i1lbWGLLdH-" target="_blank" class="flex items-center gap-2 px-5 py-2 rounded-full bg-transparent border border-white/10 hover:bg-white/5 hover:border-white/30 transition-all">
-                        <i class="fa-brands fa-youtube text-white text-base"></i>
-                        <span class="text-white font-bold text-[11px] tracking-wide">YouTube</span>
-                    </a>
-
-                    <a href="https://www.facebook.com/share/1FURqAHAeH/" target="_blank" class="flex items-center gap-2 px-5 py-2 rounded-full bg-transparent border border-white/10 hover:bg-white/5 hover:border-white/30 transition-all">
-                        <i class="fa-brands fa-facebook-f text-white text-base"></i>
-                        <span class="text-white font-bold text-[11px] tracking-wide">Facebook</span>
-                    </a>
-                </div>
+            <div class="flex flex-wrap justify-center gap-4 px-4" dir="ltr">
+                <a href="https://t.me/K_Develope" target="_blank" class="p-3 bg-white/5 rounded-full hover:bg-primary transition-all"><i class="fa-brands fa-telegram"></i></a>
+                <a href="https://www.tiktok.com/@hhfufjdg" target="_blank" class="p-3 bg-white/5 rounded-full hover:bg-primary transition-all"><i class="fa-brands fa-tiktok"></i></a>
+                <a href="https://youtube.com/@kamaleby" target="_blank" class="p-3 bg-white/5 rounded-full hover:bg-primary transition-all"><i class="fa-brands fa-youtube"></i></a>
             </div>
         </footer>
     </div>
@@ -276,79 +227,30 @@
     <!-- Modal الدعم الفني -->
     <div id="support-modal" class="fixed inset-0 z-[210] bg-black/90 backdrop-blur-xl hidden flex-col items-center justify-center p-4">
         <div class="bg-[#0f0f0f] border border-white/10 p-8 rounded-[2.5rem] shadow-2xl max-w-sm w-full relative animate-fade-up">
-            <button onclick="closeSupportModal()" class="absolute top-6 left-6 text-gray-500 hover:text-white">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
+            <button onclick="closeSupportModal()" class="absolute top-6 left-6 text-gray-500 hover:text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
             <div class="text-center mb-8">
-                <div class="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-primary/30">
-                    <i class="fa-solid fa-circle-info text-2xl text-primary"></i>
-                </div>
+                <div class="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-primary/30"><i class="fa-solid fa-circle-info text-2xl text-primary"></i></div>
                 <h3 class="text-xl font-black text-white">مركز المساعدة</h3>
-                <p class="text-gray-500 text-xs mt-2">اختر المشكلة التي تواجهك ليتم تحويلك للدعم</p>
+                <p class="text-gray-500 text-xs mt-2">اختر المشكلة التي تواجهك</p>
             </div>
             <div class="space-y-3 mb-8">
                 <label class="support-option cursor-pointer block">
                     <input type="radio" name="issue" value="عدم تنزيل الفيديوهات" class="hidden" checked>
-                    <div class="bg-white/5 border border-white/5 p-4 rounded-2xl text-right flex items-center justify-between">
-                        <span class="text-sm font-bold text-white">عدم تنزيل الفيديوهات</span>
-                        <i class="fa-solid fa-video text-gray-600"></i>
-                    </div>
+                    <div class="bg-white/5 border border-white/5 p-4 rounded-2xl text-right flex items-center justify-between"><span class="text-sm font-bold text-white">عدم تنزيل الفيديوهات</span><i class="fa-solid fa-video text-gray-600"></i></div>
                 </label>
                 <label class="support-option cursor-pointer block">
-                    <input type="radio" name="issue" value="مشكلة في تحميل الصور" class="hidden">
-                    <div class="bg-white/5 border border-white/5 p-4 rounded-2xl text-right flex items-center justify-between">
-                        <span class="text-sm font-bold text-white">مشكلة في تحميل الصور</span>
-                        <i class="fa-solid fa-image text-gray-600"></i>
-                    </div>
-                </label>
-                <label class="support-option cursor-pointer block">
-                    <input type="radio" name="issue" value="مشكلة أخرى تقنية" class="hidden">
-                    <div class="bg-white/5 border border-white/5 p-4 rounded-2xl text-right flex items-center justify-between">
-                        <span class="text-sm font-bold text-white">مشكلة أخرى تقنية</span>
-                        <i class="fa-solid fa-wrench text-gray-600"></i>
-                    </div>
+                    <input type="radio" name="issue" value="مشكلة أخرى" class="hidden">
+                    <div class="bg-white/5 border border-white/5 p-4 rounded-2xl text-right flex items-center justify-between"><span class="text-sm font-bold text-white">مشكلة أخرى تقنية</span><i class="fa-solid fa-wrench text-gray-600"></i></div>
                 </label>
             </div>
-            <button onclick="sendSupportMessage()" class="w-full bg-primary text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 transition-all hover:brightness-110 active:scale-95 shadow-lg shadow-primary/30">
-                <i class="fa-brands fa-whatsapp"></i>
-                <span>إرسال للدعم الفني</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- Modal التقييم -->
-    <div id="rating-modal" class="fixed inset-0 z-[220] bg-black/95 backdrop-blur-xl hidden flex-col items-center justify-center p-4">
-        <div class="bg-[#0f0f0f] border border-white/10 p-10 rounded-[3rem] shadow-2xl max-w-sm w-full text-center relative animate-fade-up">
-            <div class="absolute -inset-10 bg-amber-500 opacity-10 rounded-full blur-3xl"></div>
-            <div class="relative z-10 flex flex-col items-center gap-6">
-                <div class="w-20 h-20 bg-amber-500/20 rounded-full flex items-center justify-center border border-amber-500/30">
-                    <i class="fa-solid fa-star-half-stroke text-4xl text-amber-500"></i>
-                </div>
-                <div class="space-y-2">
-                    <h3 class="text-2xl font-black text-white">ما رأيك في تجربتك؟</h3>
-                    <p class="text-gray-500 text-sm font-medium">تقييمك يهمنا لتقديم خدمة أفضل.</p>
-                </div>
-                
-                <div class="flex flex-row-reverse justify-center gap-2 star-rating text-3xl">
-                    <i onclick="setRate(5)" class="fa-solid fa-star text-gray-700 hover:text-amber-400" data-index="5"></i>
-                    <i onclick="setRate(4)" class="fa-solid fa-star text-gray-700 hover:text-amber-400" data-index="4"></i>
-                    <i onclick="setRate(3)" class="fa-solid fa-star text-gray-700 hover:text-amber-400" data-index="3"></i>
-                    <i onclick="setRate(2)" class="fa-solid fa-star text-gray-700 hover:text-amber-400" data-index="2"></i>
-                    <i onclick="setRate(1)" class="fa-solid fa-star text-gray-700 hover:text-amber-400" data-index="1"></i>
-                </div>
-
-                <button onclick="submitRating()" class="w-full bg-white text-black font-black py-4 rounded-2xl transition-all hover:bg-amber-500 hover:text-white active:scale-95 shadow-xl mt-4">
-                    إرسال التقييم
-                </button>
-            </div>
+            <button onclick="sendSupportMessage()" class="w-full bg-primary text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-primary/30 transition-all hover:brightness-110"><i class="fa-brands fa-whatsapp"></i><span>إرسال للدعم الفني</span></button>
         </div>
     </div>
 
     <script>
         let currentThemeIndex = 0;
         const themes = ['pink', 'blue', 'green'];
-        let hasTriggeredDownload = false;
-        let selectedRate = 0;
+        const PROMO_KEY = 'promo_shown_kamal_million'; // مفتاح فريد لحفظ حالة الإعلان
 
         window.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
@@ -358,73 +260,25 @@
                     splash.style.display = 'none';
                     document.getElementById('app').classList.remove('hidden');
                     
-                    // إظهار نافذة الترويج بعد فتح التطبيق
-                    openPromoModal();
+                    // التحقق مما إذا كان المستخدم قد شاهد الإعلان من قبل
+                    checkAndShowPromo();
                 }, 1000);
             }, 3000); 
         });
 
-        // دوال الترويج للتطبيق الجديد
-        function openPromoModal() {
-            const promo = document.getElementById('promo-modal');
-            promo.classList.remove('hidden');
-            promo.classList.add('flex');
-        }
-
-        function closePromoModal() {
-            document.getElementById('promo-modal').classList.add('hidden');
-        }
-
-        window.onfocus = function() {
-            if (hasTriggeredDownload && localStorage.getItem('app_rated') !== 'true') {
-                setTimeout(openRatingModal, 800);
+        function checkAndShowPromo() {
+            const hasShown = localStorage.getItem(PROMO_KEY);
+            if (!hasShown) {
+                const promo = document.getElementById('promo-modal');
+                promo.classList.remove('hidden');
+                promo.classList.add('flex');
             }
-        };
-
-        function openRatingModal() {
-            if(localStorage.getItem('app_rated') === 'true') return;
-            const modal = document.getElementById('rating-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
         }
 
-        function setRate(num) {
-            selectedRate = num;
-            const stars = document.querySelectorAll('.star-rating i');
-            stars.forEach(s => {
-                const idx = parseInt(s.getAttribute('data-index'));
-                if(idx <= num) {
-                    s.classList.remove('text-gray-700');
-                    s.classList.add('text-amber-500');
-                } else {
-                    s.classList.add('text-gray-700');
-                    s.classList.remove('text-amber-500');
-                }
-            });
-        }
-
-        function submitRating() {
-            if(selectedRate === 0) return;
-            localStorage.setItem('app_rated', 'true');
-            document.getElementById('rating-modal').classList.add('hidden');
-        }
-
-        function openSupportModal() {
-            const modal = document.getElementById('support-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeSupportModal() {
-            document.getElementById('support-modal').classList.add('hidden');
-        }
-
-        function sendSupportMessage() {
-            const selectedIssue = document.querySelector('input[name="issue"]:checked').value;
-            const baseUrl = "https://wa.me/qr/M53QU6UR7ZSZM1";
-            const text = encodeURIComponent(`مرحباً دعم TIK-APP، أواجه مشكلة: ${selectedIssue}`);
-            window.open(`${baseUrl}?text=${text}`, '_blank');
-            closeSupportModal();
+        // إغلاق النافذة وحفظ الحالة لعدم العودة مرة أخرى
+        function closePromoModalPermanent() {
+            localStorage.setItem(PROMO_KEY, 'true'); // حفظ أن المستخدم شاهد الإعلان
+            document.getElementById('promo-modal').classList.add('hidden');
         }
 
         function toggleTheme() {
@@ -451,15 +305,10 @@
             try {
                 const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
                 const res = await response.json();
-
-                if (res.code === 0 && res.data) {
-                    renderResult(res.data);
-                } else {
-                    showError('الرابط غير صحيح أو المحتوى خاص');
-                }
-            } catch (err) {
-                showError('حدث خطأ في الاتصال');
-            } finally {
+                if (res.code === 0 && res.data) { renderResult(res.data); } 
+                else { showError('الرابط غير صحيح أو المحتوى خاص'); }
+            } catch (err) { showError('حدث خطأ في الاتصال'); } 
+            finally {
                 btnText.innerText = 'تحليل الرابط';
                 btnIcon.className = 'fa-solid fa-magnifying-glass';
             }
@@ -483,56 +332,31 @@
             if (data.images && data.images.length > 0) {
                 imagesPreview.classList.remove('hidden');
                 imagesPreview.innerHTML = '';
-                
-                data.images.forEach((img, i) => {
+                data.images.forEach(img => {
                     const div = document.createElement('div');
-                    div.className = 'relative flex-none w-full h-full snap-center bg-[#050505] flex items-center justify-center group';
-                    div.innerHTML = `
-                        <img src="${img}" class="w-full h-full object-contain p-2">
-                        <a href="${img}" target="_blank" onclick="handleDownload()" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-all font-black text-white text-xl backdrop-blur-sm gap-3">
-                            <i class="fa-solid fa-circle-down text-4xl text-primary animate-bounce"></i>
-                            تحميل هذه الصورة
-                        </a>
-                    `;
+                    div.className = 'relative flex-none w-full h-full snap-center flex items-center justify-center group';
+                    div.innerHTML = `<img src="${img}" class="w-full h-full object-contain p-2"><a href="${img}" target="_blank" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-all font-black text-white text-xl backdrop-blur-sm gap-3"><i class="fa-solid fa-circle-down text-4xl text-primary animate-bounce"></i>تحميل الصورة</a>`;
                     imagesPreview.appendChild(div);
                 });
-
-                downloadBox.innerHTML = `
-                    <div class="p-4 bg-primary/10 rounded-2xl text-center border border-primary/20 mb-2">
-                        <p class="text-primary font-bold text-sm">اسحب لليمين واليسار لرؤية ${data.images.length} صور</p>
-                    </div>
-                    <a href="${data.music}" target="_blank" onclick="handleDownload()" class="w-full bg-white/5 border border-white/10 text-white font-black py-5 rounded-[1.8rem] flex items-center justify-center gap-3 hover:bg-white/10 transition-all active:scale-95">
-                        <i class="fa-solid fa-music text-primary"></i>
-                        <span>تحميل الموسيقى فقط</span>
-                    </a>
-                `;
             } else {
                 videoPreview.classList.remove('hidden');
                 videoPreview.src = data.play || data.wmplay;
-                downloadBox.innerHTML = `
-                    <a href="${data.play}" target="_blank" onclick="handleDownload()" class="w-full bg-primary text-white font-black py-6 rounded-[1.8rem] flex items-center justify-center gap-4 transition-all active:scale-[0.97] shadow-xl text-lg hover:brightness-110">
-                        <i class="fa-solid fa-download"></i>
-                        <span>حفظ الفيديو (بدون علامة)</span>
-                    </a>
-                    <a href="${data.music}" target="_blank" onclick="handleDownload()" class="w-full bg-white/5 border border-white/10 text-white font-black py-4 rounded-[1.5rem] flex items-center justify-center gap-3 hover:bg-white/10 transition-all text-sm active:scale-[0.97]">
-                        <i class="fa-solid fa-music text-primary"></i>
-                        <span>تحميل الصوت (MP3)</span>
-                    </a>
-                `;
+                downloadBox.innerHTML = `<a href="${data.play}" target="_blank" class="w-full bg-primary text-white font-black py-6 rounded-[1.8rem] flex items-center justify-center gap-4 transition-all active:scale-[0.97] shadow-xl text-lg hover:brightness-110"><i class="fa-solid fa-download"></i><span>حفظ الفيديو (بدون علامة)</span></a>`;
             }
-            
+            downloadBox.innerHTML += `<a href="${data.music}" target="_blank" class="w-full bg-white/5 border border-white/10 text-white font-black py-4 rounded-[1.5rem] flex items-center justify-center gap-3 hover:bg-white/10 transition-all text-sm active:scale-[0.97]"><i class="fa-solid fa-music text-primary"></i><span>تحميل الصوت (MP3)</span></a>`;
             setTimeout(() => resultDiv.scrollIntoView({ behavior: 'smooth' }), 100);
         }
 
-        function handleDownload() {
-            hasTriggeredDownload = true;
+        function openSupportModal() { document.getElementById('support-modal').classList.replace('hidden', 'flex'); }
+        function closeSupportModal() { document.getElementById('support-modal').classList.replace('flex', 'hidden'); }
+        function sendSupportMessage() {
+            const selectedIssue = document.querySelector('input[name="issue"]:checked').value;
+            window.open(`https://wa.me/qr/M53QU6UR7ZSZM1?text=${encodeURIComponent('أواجه مشكلة: ' + selectedIssue)}`, '_blank');
+            closeSupportModal();
         }
-
         function showError(text) {
             document.getElementById('error-text').innerText = text;
-            const errorMsg = document.getElementById('error-msg');
-            errorMsg.classList.remove('hidden');
-            errorMsg.classList.add('flex');
+            document.getElementById('error-msg').classList.replace('hidden', 'flex');
         }
     </script>
 </body>

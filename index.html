@@ -1,3 +1,4 @@
+
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -73,7 +74,7 @@
 <body class="theme-pink transition-colors duration-500">
 
     <!-- Splash Screen -->
-    <div id="splash" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center transition-opacity duration-1000">
+    <div id="splash" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center transition-opacity duration-1000 hidden">
         <div class="relative flex flex-col items-center">
             <div class="relative mb-10 group">
                 <div class="absolute -inset-10 bg-primary opacity-20 rounded-full blur-3xl animate-pulse"></div>
@@ -102,7 +103,7 @@
         </div>
     </div>
 
-    <!-- Modal الترويج للتطبيق الجديد (يظهر مرة واحدة فقط) -->
+    <!-- Modal الترويج للتطبيق الجديد -->
     <div id="promo-modal" class="fixed inset-0 z-[150] bg-black/95 backdrop-blur-2xl hidden flex-col items-center justify-center p-6">
         <div class="bg-gradient-to-b from-[#111] to-black border border-white/10 p-10 rounded-[3rem] shadow-2xl max-w-sm w-full text-center relative animate-fade-up">
             <div class="absolute -inset-10 bg-primary opacity-10 rounded-full blur-3xl"></div>
@@ -128,6 +129,52 @@
                     </button>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- صفحة التحميل المخصصة الخاصة بنا (تظهر في تبويب جديد) -->
+    <div id="custom-download-page" class="fixed inset-0 z-[300] bg-[#050505] hidden flex-col items-center justify-center p-6">
+        <div class="relative w-full max-w-md flex flex-col items-center text-center animate-fade-up">
+            <!-- التأثير الخلفي -->
+            <div class="absolute inset-0 bg-primary opacity-10 rounded-full blur-[100px] pointer-events-none"></div>
+            
+            <!-- أيقونة التحميل -->
+            <div class="relative w-28 h-28 bg-[#111] rounded-[2.5rem] flex items-center justify-center mb-8 border border-white/10 shadow-2xl z-10 overflow-hidden">
+                <div id="download-icon-bg" class="absolute inset-0 bg-primary/20 animate-pulse"></div>
+                <i id="download-icon" class="fa-solid fa-cloud-arrow-down text-5xl text-primary relative z-10 animate-bounce-slow"></i>
+                <div class="shimmer-overlay"></div>
+            </div>
+            
+            <h2 id="download-title" class="text-3xl font-black text-white mb-3 italic tracking-tight relative z-10">جاري التنزيل...</h2>
+            <p id="download-desc" class="text-gray-400 text-sm mb-12 font-bold relative z-10 leading-relaxed">
+                يرجى الانتظار، جاري معالجة وحفظ الملف<br>على جهازك مباشرة.
+            </p>
+
+            <!-- شريط التقدم -->
+            <div id="progress-container" class="w-full relative z-10">
+                <div class="w-full h-4 bg-[#111] border border-white/10 rounded-full overflow-hidden mb-3 relative shadow-inner">
+                    <div id="download-progress-bar" class="h-full bg-primary w-0 transition-all duration-300 relative rounded-full">
+                        <div class="shimmer-overlay"></div>
+                    </div>
+                </div>
+                <div class="flex justify-between w-full text-sm font-black text-gray-500 mb-10 px-2">
+                    <span id="download-percentage" class="text-white">0%</span>
+                    <span class="text-primary flex items-center gap-1">
+                        <i class="fa-solid fa-bolt text-xs"></i> سرعة قصوى
+                    </span>
+                </div>
+            </div>
+
+            <button id="cancel-btn" onclick="cancelOrClose()" class="w-full sm:w-auto px-12 py-4 bg-white/5 text-gray-300 rounded-2xl hover:bg-white/10 transition-all text-sm font-bold border border-white/10 relative z-10 active:scale-95 shadow-lg">
+                إلغاء العملية
+            </button>
+        </div>
+        
+        <!-- حقوق المطور في صفحة التحميل -->
+        <div class="absolute bottom-8 text-center w-full">
+            <span class="text-[10px] text-primary/50 font-bold uppercase flex items-center justify-center gap-1">
+                TIK-APP BY KAMAL
+            </span>
         </div>
     </div>
 
@@ -249,20 +296,34 @@
     <script>
         let currentThemeIndex = 0;
         const themes = ['pink', 'blue', 'green'];
-        const PROMO_KEY = 'promo_shown_kamal_million'; // مفتاح فريد لحفظ حالة الإعلان
+        const PROMO_KEY = 'promo_shown_kamal_million'; 
+        let downloadAborter = null;
+        let isDownloadFinished = false;
 
         window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const splash = document.getElementById('splash');
-                splash.classList.add('opacity-0');
+            // التحقق مما إذا كنا في "وضع التحميل" (أي تم فتح الصفحة في تبويب جديد برابط مخصص)
+            const urlParams = new URLSearchParams(window.location.search);
+            const downloadUrl = urlParams.get('download');
+            const filename = urlParams.get('filename') || 'TikApp_Media';
+
+            if (downloadUrl) {
+                // نحن الآن في التبويب الجديد! نعرض صفحة التحميل فقط
+                document.getElementById('custom-download-page').classList.remove('hidden');
+                document.getElementById('custom-download-page').classList.add('flex');
+                startCustomDownload(decodeURIComponent(downloadUrl), filename);
+            } else {
+                // التشغيل العادي للتطبيق
+                document.getElementById('splash').classList.remove('hidden');
                 setTimeout(() => {
-                    splash.style.display = 'none';
-                    document.getElementById('app').classList.remove('hidden');
-                    
-                    // التحقق مما إذا كان المستخدم قد شاهد الإعلان من قبل
-                    checkAndShowPromo();
-                }, 1000);
-            }, 3000); 
+                    const splash = document.getElementById('splash');
+                    splash.classList.add('opacity-0');
+                    setTimeout(() => {
+                        splash.style.display = 'none';
+                        document.getElementById('app').classList.remove('hidden');
+                        checkAndShowPromo();
+                    }, 1000);
+                }, 3000); 
+            }
         });
 
         function checkAndShowPromo() {
@@ -274,9 +335,8 @@
             }
         }
 
-        // إغلاق النافذة وحفظ الحالة لعدم العودة مرة أخرى
         function closePromoModalPermanent() {
-            localStorage.setItem(PROMO_KEY, 'true'); // حفظ أن المستخدم شاهد الإعلان
+            localStorage.setItem(PROMO_KEY, 'true'); 
             document.getElementById('promo-modal').classList.add('hidden');
         }
 
@@ -284,6 +344,100 @@
             document.body.classList.remove(`theme-${themes[currentThemeIndex]}`);
             currentThemeIndex = (currentThemeIndex + 1) % themes.length;
             document.body.classList.add(`theme-${themes[currentThemeIndex]}`);
+        }
+
+        // دالة تفتح التبويب الجديد مع الرابط المخصص
+        function openDownloadInNewTab(url, filename) {
+            const currentUrl = window.location.href.split('?')[0]; // الحصول على رابط الصفحة الحالي بدون إضافات
+            const downloadUrl = `${currentUrl}?download=${encodeURIComponent(url)}&filename=${encodeURIComponent(filename)}`;
+            window.open(downloadUrl, '_blank');
+        }
+
+        // دالة التحميل التي تعمل في التبويب الجديد
+        async function startCustomDownload(url, defaultFilename) {
+            const progressBar = document.getElementById('download-progress-bar');
+            const percentageText = document.getElementById('download-percentage');
+            const titleText = document.getElementById('download-title');
+            const descText = document.getElementById('download-desc');
+            const iconBg = document.getElementById('download-icon-bg');
+            const icon = document.getElementById('download-icon');
+            const cancelBtn = document.getElementById('cancel-btn');
+            
+            downloadAborter = new AbortController();
+
+            try {
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    if (progress < 85) { 
+                        progress += Math.random() * 5;
+                        if(progress > 85) progress = 85;
+                        progressBar.style.width = `${progress}%`;
+                        percentageText.innerText = `${Math.floor(progress)}%`;
+                    }
+                }, 300);
+
+                const response = await fetch(url, { signal: downloadAborter.signal });
+                
+                if (!response.ok) throw new Error('Network response was not ok');
+                
+                const blob = await response.blob();
+                const blobUrl = window.URL.createObjectURL(blob);
+                
+                clearInterval(progressInterval);
+                
+                progressBar.style.width = '100%';
+                percentageText.innerText = '100%';
+
+                setTimeout(() => {
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = `TikApp_Kamal_${Math.floor(Math.random() * 10000)}_${defaultFilename}`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(blobUrl);
+                    
+                    // تحويل الصفحة إلى حالة "تم التنزيل"
+                    isDownloadFinished = true;
+                    titleText.innerText = 'تم التنزيل بنجاح!';
+                    descText.innerText = 'تم حفظ الملف في جهازك، يمكنك الآن إغلاق هذه الصفحة.';
+                    icon.className = 'fa-solid fa-circle-check text-6xl text-green-500 relative z-10';
+                    iconBg.className = 'absolute inset-0 bg-green-500/20';
+                    document.getElementById('progress-container').classList.add('hidden');
+                    
+                    cancelBtn.innerText = 'إغلاق الصفحة';
+                    cancelBtn.classList.replace('bg-white/5', 'bg-green-500/20');
+                    cancelBtn.classList.replace('text-gray-300', 'text-green-400');
+                    
+                }, 500);
+
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    // المستخدم قام بالإلغاء
+                    titleText.innerText = 'تم الإلغاء';
+                    descText.innerText = 'تم إيقاف التحميل بناءً على طلبك.';
+                } else {
+                    // فشل الجلب، نستخدم الطريقة الافتراضية
+                    console.error('فشل التحميل المباشر، جاري استخدام الطريقة العادية', error);
+                    window.location.href = url; // التوجيه المباشر لرابط الفيديو كبديل أخير
+                    titleText.innerText = 'جاري التوجيه...';
+                    descText.innerText = 'سيتم فتح الملف عبر متصفحك مباشرة.';
+                }
+                
+                isDownloadFinished = true;
+                icon.className = 'fa-solid fa-triangle-exclamation text-5xl text-yellow-500 relative z-10';
+                iconBg.className = 'absolute inset-0 bg-yellow-500/20';
+                document.getElementById('progress-container').classList.add('hidden');
+                cancelBtn.innerText = 'إغلاق الصفحة';
+            }
+        }
+
+        function cancelOrClose() {
+            if (isDownloadFinished) {
+                window.close(); // إغلاق التبويب إذا انتهى التحميل
+            } else if (downloadAborter) {
+                downloadAborter.abort(); // إيقاف التحميل إذا كان جارياً
+            }
         }
 
         async function fetchMedia() {
@@ -328,21 +482,28 @@
             imagesPreview.classList.add('hidden');
             downloadBox.innerHTML = '';
 
+            // تم استبدال الأزرار لتفتح "التبويب الجديد المخصص"
             if (data.images && data.images.length > 0) {
                 imagesPreview.classList.remove('hidden');
                 imagesPreview.innerHTML = '';
-                data.images.forEach(img => {
+                data.images.forEach((img, index) => {
                     const div = document.createElement('div');
                     div.className = 'relative flex-none w-full h-full snap-center flex items-center justify-center group';
-                    div.innerHTML = `<img src="${img}" class="w-full h-full object-contain p-2"><a href="${img}" target="_blank" class="absolute inset-0 flex flex-col items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-all font-black text-white text-xl backdrop-blur-sm gap-3"><i class="fa-solid fa-circle-down text-4xl text-primary animate-bounce"></i>تحميل الصورة</a>`;
+                    div.innerHTML = `
+                        <img src="${img}" class="w-full h-full object-contain p-2">
+                        <button onclick="openDownloadInNewTab('${img}', 'image_${index}.jpg')" class="absolute inset-0 w-full h-full border-none outline-none flex flex-col items-center justify-center bg-black/60 opacity-0 group-hover:opacity-100 transition-all font-black text-white text-xl backdrop-blur-sm gap-3 cursor-pointer">
+                            <i class="fa-solid fa-circle-down text-4xl text-primary animate-bounce"></i>تحميل الصورة
+                        </button>
+                    `;
                     imagesPreview.appendChild(div);
                 });
             } else {
                 videoPreview.classList.remove('hidden');
                 videoPreview.src = data.play || data.wmplay;
-                downloadBox.innerHTML = `<a href="${data.play}" target="_blank" class="w-full bg-primary text-white font-black py-6 rounded-[1.8rem] flex items-center justify-center gap-4 transition-all active:scale-[0.97] shadow-xl text-lg hover:brightness-110"><i class="fa-solid fa-download"></i><span>حفظ الفيديو (بدون علامة)</span></a>`;
+                downloadBox.innerHTML = `<button onclick="openDownloadInNewTab('${data.play || data.wmplay}', 'video.mp4')" class="w-full border-none outline-none bg-primary text-white font-black py-6 rounded-[1.8rem] flex items-center justify-center gap-4 transition-all active:scale-[0.97] shadow-xl text-lg hover:brightness-110 cursor-pointer"><i class="fa-solid fa-download"></i><span>حفظ الفيديو (بدون علامة)</span></button>`;
             }
-            downloadBox.innerHTML += `<a href="${data.music}" target="_blank" class="w-full bg-white/5 border border-white/10 text-white font-black py-4 rounded-[1.5rem] flex items-center justify-center gap-3 hover:bg-white/10 transition-all text-sm active:scale-[0.97]"><i class="fa-solid fa-music text-primary"></i><span>تحميل الصوت (MP3)</span></a>`;
+            downloadBox.innerHTML += `<button onclick="openDownloadInNewTab('${data.music}', 'audio.mp3')" class="w-full border-none outline-none bg-white/5 border border-white/10 text-white font-black py-4 rounded-[1.5rem] flex items-center justify-center gap-3 hover:bg-white/10 transition-all text-sm active:scale-[0.97] cursor-pointer"><i class="fa-solid fa-music text-primary"></i><span>تحميل الصوت (MP3)</span></button>`;
+            
             setTimeout(() => resultDiv.scrollIntoView({ behavior: 'smooth' }), 100);
         }
 
@@ -360,3 +521,6 @@
     </script>
 </body>
 </html>
+
+
+

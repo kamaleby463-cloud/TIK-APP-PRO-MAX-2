@@ -9,6 +9,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- JSZip for downloading all images as one file -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
@@ -89,219 +91,7 @@
             background-color: rgba(255, 255, 255, 0.05); 
             box-shadow: inset 0 0 20px var(--accent-glow);
         }
-
-        .leaderboard-rank-1 { background: linear-gradient(135deg, rgba(255,215,0,0.2), transparent); border-color: #ffd700; }
-        .leaderboard-rank-2 { background: linear-gradient(135deg, rgba(192,192,192,0.2), transparent); border-color: #c0c0c0; }
-        .leaderboard-rank-3 { background: linear-gradient(135deg, rgba(205,127,50,0.2), transparent); border-color: #cd7f32; }
     </style>
-
-    <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        window.firebaseDB = null;
-        window.firebaseAppId = null;
-        window.currentTkCode = null;
-        window.allUsersData = [];
-
-        const initFirebase = async () => {
-            if (typeof __firebase_config === 'undefined') return;
-            try {
-                const firebaseConfig = JSON.parse(__firebase_config);
-                const app = initializeApp(firebaseConfig);
-                const auth = getAuth(app);
-                const db = getFirestore(app);
-                window.firebaseDB = db;
-                
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'tik-app-kamal';
-                window.firebaseAppId = appId;
-
-                const initAuth = async () => {
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                };
-                await initAuth();
-
-                onAuthStateChanged(auth, (user) => {
-                    if (!user) return;
-
-                    // الاستماع لقائمة المستخدمين والصدارة
-                    const publicUsersRef = collection(db, 'artifacts', appId, 'public', 'data', 'users');
-                    onSnapshot(publicUsersRef, (snapshot) => {
-                        window.allUsersData = [];
-                        snapshot.forEach(doc => {
-                            window.allUsersData.push({ id: doc.id, ...doc.data() });
-                        });
-                        window.allUsersData.sort((a, b) => (b.usageCount || 0) - (a.usageCount || 0));
-                        window.renderLeaderboard();
-                    }, (err) => console.error("Error fetching users:", err));
-
-                    // الاستماع لحالة تسجيل الدخول الخاصة بالجهاز
-                    const privateProfileRef = doc(db, 'artifacts', appId, 'users', user.uid, 'settings', 'activeProfile');
-                    onSnapshot(privateProfileRef, (docSnap) => {
-                        if (docSnap.exists() && docSnap.data().tkCode) {
-                            window.currentTkCode = docSnap.data().tkCode;
-                            document.getElementById('auth-modal-overlay').classList.add('hidden');
-                            document.getElementById('auth-modal-overlay').classList.remove('flex');
-                            document.getElementById('nav-profile-btn').classList.remove('hidden');
-                            window.renderLeaderboard(); // تحديث الاسم في الشريط العلوي
-                        } else {
-                            setTimeout(() => {
-                                document.getElementById('auth-modal-overlay').classList.remove('hidden');
-                                document.getElementById('auth-modal-overlay').classList.add('flex');
-                                window.showAuthSelection();
-                            }, 3500); // إظهار بعد شاشة البداية
-                        }
-                    }, (err) => console.error("Error fetching profile:", err));
-                });
-            } catch (e) { console.error("Firebase init failed:", e); }
-        };
-
-        window.registerUser = async () => {
-            const nameInput = document.getElementById('reg-name').value.trim();
-            const btnText = document.getElementById('reg-btn-text');
-            if (!nameInput) {
-                document.getElementById('reg-error').innerText = "يرجى كتابة اسمك أولاً";
-                document.getElementById('reg-error').classList.remove('hidden');
-                return;
-            }
-            btnText.innerText = "جاري الإنشاء...";
-
-            const tkCode = "TK" + Math.floor(10000 + Math.random() * 90000);
-            const db = window.firebaseDB;
-            const appId = window.firebaseAppId;
-            const user = getAuth().currentUser;
-
-            if (user && db) {
-                try {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'users', tkCode), {
-                        name: nameInput,
-                        usageCount: 0,
-                        createdAt: new Date().toISOString()
-                    });
-                    
-                    document.getElementById('reg-step-1').classList.add('hidden');
-                    document.getElementById('reg-step-2').classList.remove('hidden');
-                    document.getElementById('generated-tk-code').innerText = tkCode;
-
-                    // حفظ الكود في الإعدادات الخاصة
-                    await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'settings', 'activeProfile'), {
-                        tkCode: tkCode
-                    });
-                } catch (e) {
-                    console.error(e);
-                    document.getElementById('reg-error').innerText = "حدث خطأ، يرجى المحاولة مرة أخرى.";
-                    document.getElementById('reg-error').classList.remove('hidden');
-                    btnText.innerText = "دخول";
-                }
-            }
-        };
-
-        window.loginUser = async () => {
-            const codeInput = document.getElementById('login-code').value.trim().toUpperCase();
-            const btnText = document.getElementById('log-btn-text');
-            if (!codeInput || !codeInput.startsWith('TK')) {
-                document.getElementById('log-error').innerText = "الرجاء إدخال كود صحيح يبدأ بـ TK";
-                document.getElementById('log-error').classList.remove('hidden');
-                return;
-            }
-            btnText.innerText = "جاري التحقق...";
-
-            const db = window.firebaseDB;
-            const appId = window.firebaseAppId;
-            const user = getAuth().currentUser;
-
-            if (user && db) {
-                try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', codeInput);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        await setDoc(doc(db, 'artifacts', appId, 'users', user.uid, 'settings', 'activeProfile'), {
-                            tkCode: codeInput
-                        });
-                        // سيتم إخفاء النافذة تلقائياً عبر onSnapshot
-                    } else {
-                        document.getElementById('log-error').innerText = "الكود غير موجود، تأكد منه مجدداً";
-                        document.getElementById('log-error').classList.remove('hidden');
-                        btnText.innerText = "دخول";
-                    }
-                } catch (e) {
-                    console.error(e);
-                    btnText.innerText = "دخول";
-                }
-            }
-        };
-
-        window.incrementAppUsage = async () => {
-            const db = window.firebaseDB;
-            const appId = window.firebaseAppId;
-            if (db && window.currentTkCode) {
-                try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'users', window.currentTkCode);
-                    await updateDoc(docRef, { usageCount: increment(1) });
-                } catch (e) { console.error("Increment error:", e); }
-            }
-        };
-
-        window.renderLeaderboard = () => {
-            const listContainer = document.getElementById('leaderboard-list');
-            listContainer.innerHTML = '';
-            
-            // تحديث بيانات المستخدم الحالي
-            if (window.currentTkCode) {
-                const myData = window.allUsersData.find(u => u.id === window.currentTkCode);
-                if (myData) {
-                    document.getElementById('nav-profile-name').innerText = myData.name;
-                    document.getElementById('profile-my-name').innerText = myData.name;
-                    document.getElementById('profile-my-code').innerText = myData.id;
-                    document.getElementById('profile-my-usage').innerText = myData.usageCount + ' تنزيل';
-                }
-            }
-
-            // عرض لوحة الصدارة
-            window.allUsersData.slice(0, 10).forEach((user, index) => {
-                const rank = index + 1;
-                let rankClass = 'bg-white/5 border-white/10';
-                let icon = `<span class="text-gray-400 font-bold text-xl w-6 text-center">${rank}</span>`;
-                
-                if (rank === 1) { rankClass = 'leaderboard-rank-1'; icon = '<i class="fa-solid fa-crown text-yellow-400 text-xl w-6 text-center animate-bounce"></i>'; }
-                else if (rank === 2) { rankClass = 'leaderboard-rank-2'; icon = '<i class="fa-solid fa-medal text-gray-300 text-xl w-6 text-center"></i>'; }
-                else if (rank === 3) { rankClass = 'leaderboard-rank-3'; icon = '<i class="fa-solid fa-medal text-amber-600 text-xl w-6 text-center"></i>'; }
-
-                const isMe = user.id === window.currentTkCode;
-                if (isMe) rankClass += ' border-primary/50 shadow-[0_0_15px_rgba(225,29,72,0.2)]';
-
-                const html = `
-                    <div class="flex items-center justify-between p-4 rounded-2xl border ${rankClass} transition-all hover:scale-[1.02]">
-                        <div class="flex items-center gap-4">
-                            ${icon}
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center text-white font-bold border border-white/10 shadow-inner">
-                                ${user.name.charAt(0).toUpperCase()}
-                            </div>
-                            <div class="text-right">
-                                <p class="text-white font-bold text-sm sm:text-base flex items-center gap-2">
-                                    ${user.name} ${isMe ? '<span class="text-[10px] bg-primary px-2 py-0.5 rounded-full text-white">أنت</span>' : ''}
-                                </p>
-                                <p class="text-gray-400 text-xs font-mono" dir="ltr">${user.id}</p>
-                            </div>
-                        </div>
-                        <div class="text-center bg-black/40 px-3 py-1.5 rounded-xl border border-white/5">
-                            <span class="block text-primary font-black text-sm sm:text-base">${user.usageCount}</span>
-                            <span class="block text-[10px] text-gray-500 font-bold">تنزيل</span>
-                        </div>
-                    </div>
-                `;
-                listContainer.innerHTML += html;
-            });
-        };
-
-        initFirebase();
-    </script>
 </head>
 <body class="theme-pink transition-colors duration-500 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#111] via-[#030303] to-[#000] min-h-screen">
 
@@ -337,97 +127,30 @@
         </div>
     </div>
 
-    <!-- Auth / Users System Overlays -->
-    <div id="auth-modal-overlay" class="fixed inset-0 z-[400] bg-black/90 backdrop-blur-2xl hidden flex-col items-center justify-center p-4">
-        
-        <!-- Selection Step -->
-        <div id="auth-selection" class="glass-panel p-8 sm:p-10 rounded-[2.5rem] shadow-2xl max-w-sm w-full relative animate-fade-up border-t-white/20 text-center">
-            <div class="w-20 h-20 bg-primary/10 rounded-[1.5rem] flex items-center justify-center mx-auto mb-6 border border-primary/30 shadow-[inset_0_0_20px_rgba(255,255,255,0.05)]">
-                <i class="fa-solid fa-user-astronaut text-4xl text-primary filter drop-shadow-[0_0_10px_var(--accent-glow)]"></i>
-            </div>
-            <h3 class="text-2xl font-black text-white mb-2">مرحباً بك في TIK-APP</h3>
-            <p class="text-gray-400 text-sm mb-8 font-semibold leading-relaxed">اختر طريقة الدخول للبدء وحفظ إحصائيات التنزيل الخاصة بك.</p>
-            
-            <div class="space-y-4">
-                <button onclick="window.showRegister()" class="w-full bg-primary text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 shadow-primary-glow transition-all hover:scale-[1.02] active:scale-95 text-lg">
-                    <i class="fa-solid fa-user-plus"></i>
-                    <span>مستخدم جديد</span>
-                </button>
-                <button onclick="window.showLogin()" class="w-full bg-white/5 border border-white/10 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 transition-all hover:bg-white/10 active:scale-95 text-lg">
-                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                    <span>تسجيل دخول بحساب سابق</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Register Step -->
-        <div id="auth-register" class="glass-panel p-8 sm:p-10 rounded-[2.5rem] shadow-2xl max-w-sm w-full relative hidden animate-fade-up border-t-white/20 text-center">
-            <button onclick="window.showAuthSelection()" class="absolute top-6 left-6 w-8 h-8 flex items-center justify-center bg-white/5 rounded-full text-gray-400 hover:text-white transition-all"><i class="fa-solid fa-arrow-left"></i></button>
-            
-            <div id="reg-step-1">
-                <h3 class="text-2xl font-black text-white mb-2">إنشاء حساب جديد</h3>
-                <p class="text-gray-400 text-sm mb-6 font-semibold">أدخل اسمك ليظهر في لوحة الصدارة</p>
-                <input type="text" id="reg-name" placeholder="اسمك الكريم..." class="w-full bg-black/60 border border-white/10 text-white rounded-2xl p-4 text-center mb-4 focus:border-primary focus:outline-none transition-colors" maxlength="15">
-                <p id="reg-error" class="text-red-400 text-xs font-bold mb-4 hidden"></p>
-                <button onclick="window.registerUser()" class="w-full bg-primary text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 shadow-primary-glow transition-all hover:scale-[1.02] active:scale-95">
-                    <span id="reg-btn-text">إنشاء الحساب</span>
-                </button>
-            </div>
-
-            <div id="reg-step-2" class="hidden">
-                <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-green-500/50">
-                    <i class="fa-solid fa-check text-2xl text-green-400"></i>
+    <!-- Main App -->
+    <div id="promo-modal" class="fixed inset-0 z-[150] bg-black/80 backdrop-blur-xl hidden flex-col items-center justify-center p-6">
+        <div class="glass-panel p-10 rounded-[2.5rem] max-w-sm w-full text-center relative animate-fade-up border-t border-t-white/20">
+            <div class="absolute -inset-10 bg-primary opacity-10 rounded-full blur-3xl"></div>
+            <div class="relative z-10 flex flex-col items-center gap-6">
+                <div class="w-24 h-24 glass-panel rounded-3xl flex items-center justify-center rotate-12 shadow-2xl border-white/20">
+                    <i class="fa-solid fa-trophy text-5xl text-primary animate-pulse filter drop-shadow-[0_0_15px_var(--accent-glow)]"></i>
                 </div>
-                <h3 class="text-xl font-black text-white mb-2">تم الإنشاء بنجاح!</h3>
-                <p class="text-gray-400 text-sm mb-4 font-semibold">هذا هو كود الدخول الخاص بك، احتفظ به لاستخدامه في أجهزة أخرى:</p>
-                <div class="bg-black/60 border border-primary/50 text-primary text-2xl font-black rounded-2xl p-4 tracking-widest mb-6 font-mono select-all" id="generated-tk-code" dir="ltr"></div>
-                <button onclick="window.closeAuthModal()" class="w-full bg-primary text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 shadow-primary-glow transition-all hover:scale-[1.02] active:scale-95">
-                    البدء في استخدام التطبيق
-                </button>
-            </div>
-        </div>
-
-        <!-- Login Step -->
-        <div id="auth-login" class="glass-panel p-8 sm:p-10 rounded-[2.5rem] shadow-2xl max-w-sm w-full relative hidden animate-fade-up border-t-white/20 text-center">
-            <button onclick="window.showAuthSelection()" class="absolute top-6 left-6 w-8 h-8 flex items-center justify-center bg-white/5 rounded-full text-gray-400 hover:text-white transition-all"><i class="fa-solid fa-arrow-left"></i></button>
-            <h3 class="text-2xl font-black text-white mb-2">تسجيل الدخول</h3>
-            <p class="text-gray-400 text-sm mb-6 font-semibold">أدخل كود TK الخاص بك للعودة لحسابك</p>
-            <input type="text" id="login-code" placeholder="TK..." dir="ltr" class="w-full bg-black/60 border border-white/10 text-primary font-black tracking-widest uppercase rounded-2xl p-4 text-center mb-4 focus:border-primary focus:outline-none transition-colors">
-            <p id="log-error" class="text-red-400 text-xs font-bold mb-4 hidden"></p>
-            <button onclick="window.loginUser()" class="w-full bg-primary text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 shadow-primary-glow transition-all hover:scale-[1.02] active:scale-95">
-                <span id="log-btn-text">دخول</span>
-            </button>
-        </div>
-    </div>
-
-    <!-- Leaderboard / Profile Modal -->
-    <div id="profile-modal" class="fixed inset-0 z-[350] bg-black/80 backdrop-blur-xl hidden flex-col items-center justify-center p-4">
-        <div class="glass-panel p-6 sm:p-8 rounded-[2.5rem] shadow-2xl max-w-md w-full relative animate-fade-up border-t-white/20 flex flex-col max-h-[90vh]">
-            <button onclick="window.closeProfileModal()" class="absolute top-6 left-6 w-8 h-8 flex items-center justify-center bg-white/5 rounded-full text-gray-400 hover:text-white hover:bg-red-500/80 transition-all z-10"><i class="fa-solid fa-xmark"></i></button>
-            
-            <!-- Profile Header -->
-            <div class="text-center mb-6 pb-6 border-b border-white/10">
-                <div class="inline-block p-1 rounded-full bg-gradient-to-r from-primary to-primary-dark mb-3">
-                    <div class="w-16 h-16 rounded-full bg-black flex items-center justify-center">
-                        <i class="fa-solid fa-user-astronaut text-2xl text-white"></i>
-                    </div>
+                <div class="space-y-3">
+                    <h3 class="text-3xl font-black text-white italic">تطبيقنا الجديد!</h3>
+                    <p class="text-gray-300 text-sm font-semibold leading-relaxed">
+                        ندعوك لتجربة تطبيقنا الرائع والجديد <br>
+                        <span class="text-primary text-xl font-black mt-1 block">"من سيربح مليون أوقية"</span>
+                        اختبر ذكاءك واستمتع بتجربة موريتانية فخمة.
+                    </p>
                 </div>
-                <h3 class="text-xl font-black text-white" id="profile-my-name">جاري التحميل...</h3>
-                <p class="text-primary font-mono text-sm tracking-widest mt-1 font-bold" id="profile-my-code" dir="ltr">TK...</p>
-                <div class="mt-4 inline-flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-xl text-sm">
-                    <i class="fa-solid fa-cloud-arrow-down text-gray-400"></i>
-                    <span class="text-white font-bold" id="profile-my-usage">0 تنزيل</span>
-                </div>
-            </div>
-
-            <!-- Leaderboard -->
-            <div class="flex-grow overflow-hidden flex flex-col">
-                <div class="flex items-center justify-center gap-2 mb-4">
-                    <i class="fa-solid fa-trophy text-yellow-500 text-xl"></i>
-                    <h4 class="text-lg font-black text-white">لوحة الصدارة (المستقلين)</h4>
-                </div>
-                <div id="leaderboard-list" class="overflow-y-auto custom-scrollbar pr-2 space-y-3 pb-2 flex-grow">
-                    <!-- يتم إدراج المستخدمين هنا عبر الجافاسكربت -->
+                <div class="w-full space-y-3 mt-4">
+                    <a href="https://kamaleby463-cloud.github.io/Who-will-win-one-million-ounces-/" target="_blank" onclick="closePromoModalPermanent()" class="w-full bg-primary text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 transition-all hover:scale-105 active:scale-95 shadow-primary-glow">
+                        <i class="fa-solid fa-play"></i>
+                        <span>جربه الآن مجاناً</span>
+                    </a>
+                    <button onclick="closePromoModalPermanent()" class="w-full bg-white/5 text-gray-400 font-bold py-3 rounded-2xl transition-all hover:bg-white/10 hover:text-white active:scale-95">
+                        لا شكراً
+                    </button>
                 </div>
             </div>
         </div>
@@ -457,30 +180,24 @@
     <div id="app" class="hidden min-h-screen flex-col">
         <nav class="px-4 py-5 border-b border-white/5 bg-black/40 backdrop-blur-2xl sticky top-0 z-50 transition-all">
             <div class="max-w-5xl mx-auto flex justify-between items-center">
-                <div class="flex items-center gap-3 sm:gap-4 flex-wrap">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary rounded-[1rem] flex items-center justify-center shadow-primary-glow relative overflow-hidden group flex-shrink-0">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-primary rounded-[1rem] flex items-center justify-center shadow-primary-glow relative overflow-hidden group">
                         <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <i class="fa-solid fa-download text-white text-lg sm:text-xl relative z-10"></i>
+                        <i class="fa-solid fa-download text-white text-xl relative z-10"></i>
                     </div>
-                    <div class="mr-1">
-                        <h1 class="text-base sm:text-lg font-black uppercase tracking-tight text-white drop-shadow-md">Tik-App</h1>
-                        <span class="text-[9px] sm:text-[10px] text-primary font-bold uppercase flex items-center gap-1.5 opacity-90">
+                    <div>
+                        <h1 class="text-lg font-black uppercase tracking-tight text-white drop-shadow-md">Tik-App</h1>
+                        <span class="text-[10px] text-primary font-bold uppercase flex items-center gap-1.5 opacity-90">
                             <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-ping shadow-[0_0_5px_#4ade80]"></span>
                             بواسطة كمال
                         </span>
                     </div>
-                    
-                    <button onclick="window.openProfileModal()" class="mr-2 sm:mr-4 px-3 sm:px-4 py-2 bg-white/5 text-primary border border-white/10 rounded-xl hover:bg-white/10 hover:text-white transition-all active:scale-95 flex items-center gap-2 backdrop-blur-sm hidden" id="nav-profile-btn">
-                        <i class="fa-solid fa-user-astronaut text-sm"></i>
-                        <span class="text-xs font-black uppercase hidden sm:block" id="nav-profile-name">حسابي</span>
-                    </button>
-
-                    <button onclick="openSupportModal()" class="mr-1 sm:mr-2 px-3 sm:px-4 py-2 bg-white/5 text-gray-300 border border-white/10 rounded-xl hover:bg-white/10 hover:text-white transition-all active:scale-95 flex items-center gap-2 backdrop-blur-sm">
+                    <button onclick="openSupportModal()" class="mr-4 px-4 py-2 bg-white/5 text-gray-300 border border-white/10 rounded-xl hover:bg-white/10 hover:text-white transition-all active:scale-95 flex items-center gap-2 backdrop-blur-sm">
                         <i class="fa-solid fa-headset text-sm"></i>
                         <span class="text-xs font-black uppercase hidden sm:block">الدعم</span>
                     </button>
                 </div>
-                <button onclick="toggleTheme()" class="w-10 h-10 sm:w-12 sm:h-12 sm:w-auto sm:px-5 bg-white/5 text-white rounded-xl border border-white/10 flex items-center justify-center gap-2 hover:bg-white/10 transition-all shadow-lg backdrop-blur-sm group flex-shrink-0">
+                <button onclick="toggleTheme()" class="w-12 h-12 sm:w-auto sm:px-5 bg-white/5 text-white rounded-xl border border-white/10 flex items-center justify-center gap-2 hover:bg-white/10 transition-all shadow-lg backdrop-blur-sm group">
                     <i class="fa-solid fa-palette group-hover:rotate-180 transition-transform duration-500 text-primary"></i>
                     <span class="text-xs font-black uppercase hidden sm:inline-block">تغيير الثيم</span>
                 </button>
@@ -579,36 +296,8 @@
     <script>
         let currentThemeIndex = 0;
         const themes = ['pink', 'blue', 'green'];
+        const PROMO_KEY = 'promo_shown_kamal_premium';
         let currentMediaData = null;
-
-        // Modal Controls
-        window.showAuthSelection = () => {
-            document.getElementById('auth-selection').classList.remove('hidden');
-            document.getElementById('auth-register').classList.add('hidden');
-            document.getElementById('auth-login').classList.add('hidden');
-        };
-        window.showRegister = () => {
-            document.getElementById('auth-selection').classList.add('hidden');
-            document.getElementById('auth-register').classList.remove('hidden');
-            document.getElementById('reg-step-1').classList.remove('hidden');
-            document.getElementById('reg-step-2').classList.add('hidden');
-        };
-        window.showLogin = () => {
-            document.getElementById('auth-selection').classList.add('hidden');
-            document.getElementById('auth-login').classList.remove('hidden');
-        };
-        window.closeAuthModal = () => {
-            document.getElementById('auth-modal-overlay').classList.add('hidden');
-            document.getElementById('auth-modal-overlay').classList.remove('flex');
-        };
-        window.openProfileModal = () => {
-            document.getElementById('profile-modal').classList.remove('hidden');
-            document.getElementById('profile-modal').classList.add('flex');
-        };
-        window.closeProfileModal = () => {
-            document.getElementById('profile-modal').classList.add('hidden');
-            document.getElementById('profile-modal').classList.remove('flex');
-        };
 
         // Infinite Looping Typewriter Logic
         const mainTitleElement = document.getElementById('main-typed-title');
@@ -618,12 +307,20 @@
 
         function type() {
             const fullTxt = mainTitleText;
-            if (isDeleting) txt = fullTxt.substring(0, txt.length - 1);
-            else txt = fullTxt.substring(0, txt.length + 1);
+            
+            if (isDeleting) {
+                txt = fullTxt.substring(0, txt.length - 1);
+            } else {
+                txt = fullTxt.substring(0, txt.length + 1);
+            }
 
             mainTitleElement.textContent = txt;
+
             let typeSpeed = 120;
-            if (isDeleting) typeSpeed /= 2;
+
+            if (isDeleting) {
+                typeSpeed /= 2;
+            }
 
             if (!isDeleting && txt === fullTxt) {
                 typeSpeed = 3000;
@@ -632,6 +329,7 @@
                 isDeleting = false;
                 typeSpeed = 500;
             }
+
             setTimeout(() => type(), typeSpeed);
         }
 
@@ -645,10 +343,27 @@
                     const app = document.getElementById('app');
                     app.classList.remove('hidden');
                     app.classList.add('flex'); 
+                    
                     type();
+                    checkAndShowPromo();
                 }, 1000);
             }, 3000); 
         });
+
+        function checkAndShowPromo() {
+            const hasShown = localStorage.getItem(PROMO_KEY);
+            if (!hasShown) {
+                const promo = document.getElementById('promo-modal');
+                promo.classList.remove('hidden');
+                promo.classList.add('flex');
+            }
+        }
+
+        function closePromoModalPermanent() {
+            localStorage.setItem(PROMO_KEY, 'true');
+            document.getElementById('promo-modal').classList.add('hidden');
+            document.getElementById('promo-modal').classList.remove('flex');
+        }
 
         function toggleTheme() {
             document.body.classList.remove(`theme-${themes[currentThemeIndex]}`);
@@ -677,9 +392,7 @@
                 
                 if (res.code === 0 && res.data) { 
                     currentMediaData = res.data;
-                    renderResult(res.data);
-                    // زيادة عداد التنزيلات للمستخدم إذا كان مسجلاً
-                    if (window.incrementAppUsage) window.incrementAppUsage();
+                    renderResult(res.data); 
                 } 
                 else { showError('الرابط غير صحيح أو المحتوى خاص'); }
             } catch (err) { showError('حدث خطأ في الاتصال، تأكد من جودة الإنترنت لديك'); } 
@@ -856,6 +569,7 @@
                     const finalBlob = new Blob(chunks, { type: mimeType });
                     const url = URL.createObjectURL(finalBlob);
                     
+                    // فتح الفيديو في نافذة جديدة بدلاً من التحميل المباشر
                     window.open(url, '_blank');
 
                     audioCtx.close();
@@ -963,6 +677,5 @@
     </script>
 </body>
 </html>
-
 
 

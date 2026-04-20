@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- JSZip for downloading all images as one file -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap');
@@ -296,6 +298,7 @@
         const PROMO_KEY = 'promo_shown_kamal_premium';
         let currentMediaData = null;
 
+        // Infinite Looping Typewriter Logic
         const mainTitleElement = document.getElementById('main-typed-title');
         const mainTitleText = "محمل الفيديوهات والصور من تطوير كمال";
         let isDeleting = false;
@@ -303,14 +306,21 @@
 
         function type() {
             const fullTxt = mainTitleText;
+            
             if (isDeleting) {
                 txt = fullTxt.substring(0, txt.length - 1);
             } else {
                 txt = fullTxt.substring(0, txt.length + 1);
             }
+
             mainTitleElement.textContent = txt;
+
             let typeSpeed = 120;
-            if (isDeleting) typeSpeed /= 2;
+
+            if (isDeleting) {
+                typeSpeed /= 2;
+            }
+
             if (!isDeleting && txt === fullTxt) {
                 typeSpeed = 3000;
                 isDeleting = true;
@@ -318,6 +328,7 @@
                 isDeleting = false;
                 typeSpeed = 500;
             }
+
             setTimeout(() => type(), typeSpeed);
         }
 
@@ -325,11 +336,13 @@
             setTimeout(() => {
                 const splash = document.getElementById('splash');
                 splash.classList.add('opacity-0');
+                
                 setTimeout(() => {
                     splash.style.display = 'none';
                     const app = document.getElementById('app');
                     app.classList.remove('hidden');
                     app.classList.add('flex'); 
+                    
                     type();
                     checkAndShowPromo();
                 }, 1000);
@@ -426,30 +439,30 @@
                 });
 
                 downloadBox.innerHTML = `
-                    <button onclick="openMediaViewer('images', {urls: currentMediaData.images})" class="w-full bg-primary text-white font-black py-4 rounded-2xl flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95 shadow-primary-glow text-lg group">
-                        <i class="fa-solid fa-file-image text-2xl group-hover:-translate-y-1 transition-transform"></i>
-                        <span>عرض وتنزيل جميع الصور بشكل فخم</span>
+                    <button onclick="downloadImagesAsZip()" class="w-full bg-primary text-white font-black py-4 rounded-2xl flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95 shadow-primary-glow text-lg group">
+                        <i class="fa-solid fa-file-zipper text-2xl group-hover:-translate-y-1 transition-transform"></i>
+                        <span>تحميل جميع الصور (ملف ZIP واحد)</span>
                     </button>
                     <button onclick="downloadImagesAsVideo()" class="w-full border-2 border-primary bg-primary/20 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95 shadow-primary-glow text-lg group mt-3">
                         <i class="fa-solid fa-film text-2xl group-hover:-translate-y-1 transition-transform animate-pulse"></i>
-                        <span>دمج كفيديو (يفتح بصفحة فخمة)</span>
+                        <span>عرض جميع الصور كفيديو + الأغنية</span>
                     </button>
-                    <button onclick="openMediaViewer('audio', {url: '${data.music}', filename: 'tikapp_audio.mp3'})" class="w-full bg-white/5 border border-white/10 text-white font-black py-3 rounded-2xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all text-sm active:scale-95 backdrop-blur-sm mt-3">
+                    <button onclick="startSmartDownload('${data.music}', 'tikapp_audio.mp3')" class="w-full bg-white/5 border border-white/10 text-white font-black py-3 rounded-2xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all text-sm active:scale-95 backdrop-blur-sm mt-3">
                         <i class="fa-solid fa-music text-primary"></i>
-                        <span>عرض وتحميل الصوت (MP3)</span>
+                        <span>تحميل الصوت فقط (MP3)</span>
                     </button>
                 `;
             } else {
                 videoPreview.classList.remove('hidden');
                 videoPreview.src = data.play || data.wmplay;
                 downloadBox.innerHTML = `
-                    <button onclick="openMediaViewer('video', {url: '${data.play || data.wmplay}', filename: 'tikapp_video.mp4'})" class="w-full bg-primary text-white font-black py-5 rounded-2xl flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95 shadow-primary-glow text-lg group">
+                    <button onclick="startSmartDownload('${data.play || data.wmplay}', 'tikapp_video.mp4')" class="w-full bg-primary text-white font-black py-5 rounded-2xl flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95 shadow-primary-glow text-lg group">
                         <i class="fa-solid fa-cloud-arrow-down text-2xl group-hover:-translate-y-1 transition-transform"></i>
-                        <span>عرض وتحميل الفيديو (بدون علامة)</span>
+                        <span>حفظ الفيديو (بدون علامة)</span>
                     </button>
-                    <button onclick="openMediaViewer('audio', {url: '${data.music}', filename: 'tikapp_audio.mp3'})" class="w-full bg-white/5 border border-white/10 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all text-sm active:scale-95 backdrop-blur-sm mt-3">
+                    <button onclick="startSmartDownload('${data.music}', 'tikapp_audio.mp3')" class="w-full bg-white/5 border border-white/10 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all text-sm active:scale-95 backdrop-blur-sm mt-3">
                         <i class="fa-solid fa-music text-primary"></i>
-                        <span>عرض وتحميل الصوت (MP3)</span>
+                        <span>تحميل الصوت (MP3)</span>
                     </button>
                 `;
             }
@@ -494,213 +507,40 @@
             }
         }
 
-        async function blobToBase64(blob) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(blob);
-            });
-        }
-
-        // --- محرك صفحة العرض الفخمة الموحد والتحميل الإجباري ---
-        async function openMediaViewer(type, mediaData) {
-            setUIDownloadState("جاري تصميم العرض...", "يتم الآن تجهيز صفحة فخمة لعرض وتحميل المحتوى...");
-            
+        async function downloadAllImagesAsZip(imageUrls, filename) {
+            setUIDownloadState("جاري ضغط الملفات...", "يتم الآن تجميع وضغط جميع الصور في ملف ZIP واحد لسهولة التحميل.");
             try {
-                let contentHtml = '';
-                let scriptHtml = '';
-
-                if (type === 'images') {
-                    const base64Images = await Promise.all(mediaData.urls.map(async (url) => {
-                        const blob = await fetchMediaBlob(url);
-                        return await blobToBase64(blob);
-                    }));
-
-                    let imgTags = base64Images.map((base64, i) => 
-                        `<div class="media-box"><img src="${base64}" alt="صورة ${i + 1}"></div>`
-                    ).join('\n');
-
-                    contentHtml = `
-                        <p class="subtitle">تم تجميع ${base64Images.length} صور في هذا العرض.</p>
-                        <button id="download-all-btn" class="btn-download">
-                            <i class="fa-solid fa-download"></i> تنزيل جميع الصور في ملف واحد
-                        </button>
-                        <div class="gallery-grid">${imgTags}</div>
-                    `;
-
-                    // كود دمج الصور في صورة واحدة طويلة (Canvas) وتنزيلها كملف واحد فوري
-                    scriptHtml = `
-                        document.getElementById('download-all-btn').addEventListener('click', async () => {
-                            const btn = document.getElementById('download-all-btn');
-                            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري دمج الصور في ملف واحد...';
-                            
-                            try {
-                                const imgs = document.querySelectorAll('.gallery-grid img');
-                                const canvas = document.createElement('canvas');
-                                const ctx = canvas.getContext('2d');
-                                
-                                let totalHeight = 0;
-                                let maxWidth = 0;
-                                
-                                // حساب أبعاد الصورة الطويلة المدمجة
-                                imgs.forEach(img => {
-                                    maxWidth = Math.max(maxWidth, img.naturalWidth);
-                                    totalHeight += img.naturalHeight;
-                                });
-                                
-                                canvas.width = maxWidth;
-                                canvas.height = totalHeight;
-                                
-                                // رسم جميع الصور في الكانفاس واحدة تلو الأخرى
-                                let currentY = 0;
-                                imgs.forEach(img => {
-                                    const x = (maxWidth - img.naturalWidth) / 2;
-                                    ctx.drawImage(img, x, currentY);
-                                    currentY += img.naturalHeight;
-                                });
-                                
-                                // تحويل الكانفاس إلى ملف صورة وتنزيلها مباشرة بدون خيارات
-                                canvas.toBlob((blob) => {
-                                    const forceDownloadBlob = new Blob([blob], { type: 'application/octet-stream' });
-                                    const url = URL.createObjectURL(forceDownloadBlob);
-                                    const a = document.createElement('a');
-                                    a.href = url;
-                                    a.download = 'tikapp_all_images_merged.jpeg';
-                                    document.body.appendChild(a);
-                                    a.click();
-                                    document.body.removeChild(a);
-                                    URL.revokeObjectURL(url);
-                                    btn.innerHTML = '<i class="fa-solid fa-check"></i> تم تنزيل الملف بنجاح';
-                                    setTimeout(() => { btn.innerHTML = '<i class="fa-solid fa-download"></i> تنزيل جميع الصور في ملف واحد'; }, 3000);
-                                }, 'image/jpeg', 0.95);
-                                
-                            } catch(e) {
-                                alert('حدث خطأ أثناء الدمج والتنزيل');
-                                btn.innerHTML = '<i class="fa-solid fa-download"></i> تنزيل جميع الصور في ملف واحد';
-                            }
-                        });
-                    `;
-                } else if (type === 'video') {
-                    contentHtml = `
-                        <p class="subtitle">تم تجهيز الفيديو بنجاح.</p>
-                        <div class="media-box p-0">
-                            <video src="${mediaData.url}" controls autoplay playsinline></video>
-                        </div>
-                        <button onclick="downloadMedia('${mediaData.url}', '${mediaData.filename}')" id="download-btn" class="btn-download" style="margin-top: 30px;">
-                            <i class="fa-solid fa-cloud-arrow-down"></i> حفظ الفيديو لجهازك
-                        </button>
-                    `;
-                } else if (type === 'audio') {
-                    contentHtml = `
-                        <p class="subtitle">تم تجهيز المقطع الصوتي بنجاح.</p>
-                        <div class="media-box audio-wrapper">
-                            <div class="audio-icon"><i class="fa-solid fa-music"></i></div>
-                            <audio src="${mediaData.url}" controls autoplay></audio>
-                        </div>
-                        <button onclick="downloadMedia('${mediaData.url}', '${mediaData.filename}')" id="download-btn" class="btn-download" style="margin-top: 30px;">
-                            <i class="fa-solid fa-cloud-arrow-down"></i> حفظ المقطع الصوتي لجهازك
-                        </button>
-                    `;
+                const zip = new JSZip();
+                for (let i = 0; i < imageUrls.length; i++) {
+                    const blob = await fetchMediaBlob(imageUrls[i]);
+                    zip.file(`tikapp_image_${i + 1}.jpeg`, blob);
                 }
-
-                // كود التحميل المباشر والإجباري (بدون نافذة الفتح باستخدام)
-                if (type !== 'images') {
-                    scriptHtml += `
-                        async function downloadMedia(url, filename) {
-                            const btn = document.getElementById('download-btn');
-                            const originalText = btn.innerHTML;
-                            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري التنزيل المباشر...';
-                            
-                            try {
-                                const res = await fetch(url);
-                                const blob = await res.blob();
-                                // إجبار المتصفح على التحميل مباشرة بتغيير نوع الملف في الذاكرة
-                                const forceDownloadBlob = new Blob([blob], { type: 'application/octet-stream' });
-                                const blobUrl = URL.createObjectURL(forceDownloadBlob);
-                                
-                                const a = document.createElement('a');
-                                a.href = blobUrl;
-                                a.download = filename;
-                                document.body.appendChild(a);
-                                a.click();
-                                document.body.removeChild(a);
-                                URL.revokeObjectURL(blobUrl);
-                                
-                                btn.innerHTML = '<i class="fa-solid fa-check"></i> اكتمل التنزيل';
-                                setTimeout(() => { btn.innerHTML = originalText; }, 3000);
-                            } catch(e) {
-                                alert('فشل التنزيل المباشر، يرجى المحاولة مرة أخرى.');
-                                btn.innerHTML = originalText;
-                            }
-                        }
-                    `;
-                }
-
-                // الهيكل الكامل لصفحة العرض الاحترافية والفخمة
-                const fullHtml = `<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TIK-APP | عرض احترافي</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
-        body { font-family: 'Cairo', sans-serif; background-color: #050505; color: white; margin: 0; padding: 0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; background-image: radial-gradient(circle at 50% 0%, #1a0b14, #050505); overflow-x: hidden; }
-        .header { width: 100%; padding: 25px 20px; text-align: center; background: rgba(5,5,5,0.7); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(225,29,72,0.2); position: sticky; top: 0; z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h1 { margin: 0; font-size: 28px; font-weight: 900; background: linear-gradient(145deg, #ff4d6d, #e11d48); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; font-style: italic; }
-        .container { width: 100%; max-width: 600px; padding: 30px 20px 80px 20px; display: flex; flex-direction: column; align-items: center; }
-        .subtitle { color: #aaa; font-size: 15px; margin-bottom: 30px; font-weight: 600; text-align: center; }
-        .media-box { width: 100%; background: rgba(20,20,20,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 30px; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); position: relative; overflow: hidden; }
-        .media-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, #e11d48, transparent); }
-        .p-0 { padding: 0 !important; }
-        img, video { width: 100%; border-radius: 20px; display: block; }
-        .btn-download { background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%); color: white; border: none; padding: 20px; border-radius: 20px; font-size: 17px; font-weight: 900; font-family: 'Cairo', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 15px; box-shadow: 0 10px 25px rgba(225, 29, 72, 0.4); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; text-decoration: none; margin-bottom: 30px; }
-        .btn-download:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(225, 29, 72, 0.6); }
-        .btn-download:active { transform: translateY(1px); }
-        .audio-wrapper { display: flex; flex-direction: column; align-items: center; gap: 30px; padding: 50px 20px; }
-        .audio-icon { width: 120px; height: 120px; background: rgba(225,29,72,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 50px; color: #e11d48; border: 2px solid rgba(225,29,72,0.3); animation: pulse 2s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(225,29,72,0.4); } 70% { box-shadow: 0 0 0 30px rgba(225,29,72,0); } 100% { box-shadow: 0 0 0 0 rgba(225,29,72,0); } }
-        audio { width: 100%; outline: none; }
-        .gallery-grid { display: flex; flex-direction: column; gap: 25px; width: 100%; }
-    </style>
-</head>
-<body>
-    <div class="header"><h1>TIK-APP LUXURY</h1></div>
-    <div class="container">
-        ${contentHtml}
-    </div>
-    <script>${scriptHtml}<\/script>
-</body>
-</html>`;
-
-                const blob = new Blob([fullHtml], { type: 'text/html' });
-                const viewerUrl = URL.createObjectURL(blob);
-                
+                const content = await zip.generateAsync({ type: "blob" });
+                const url = URL.createObjectURL(content);
                 const a = document.createElement('a');
-                a.href = viewerUrl;
-                a.target = '_blank';
+                a.href = url;
+                a.download = filename;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
-
+                URL.revokeObjectURL(url);
             } catch (error) {
-                console.error(error);
-                alert("حدث خطأ أثناء التجهيز، يرجى المحاولة مرة أخرى.");
+                alert("حدث خطأ أثناء ضغط الملفات، يرجى المحاولة مرة أخرى.");
             } finally {
                 hideUIDownloadState();
             }
         }
 
+        // تم تحديث الدالة لمعالجة أخطاء الفيديو للأندرويد وتوحيد أبعاد الشاشة
         async function createMergedVideo(imageUrls, audioUrl, outputFilename) {
-            setUIDownloadState("جاري تصميم الفيديو...", "يتم الآن دمج الصور مع المقطع الصوتي... قد يستغرق هذا بعض الوقت.");
+            setUIDownloadState("جاري تصميم الفيديو...", "يتم الآن دمج الصور مع المقطع الصوتي... قد يستغرق هذا بعض الوقت لضمان جودة الفيديو.");
             
             try {
                 const audioBlob = await fetchMediaBlob(audioUrl);
                 const audioObjUrl = URL.createObjectURL(audioBlob);
                 const audioEl = new Audio(audioObjUrl);
                 
+                // التأكد من استخراج مدة الصوت بشكل صحيح على الأندرويد
                 await new Promise((resolve) => {
                     audioEl.onloadedmetadata = () => {
                         if (audioEl.duration === Infinity || isNaN(audioEl.duration)) {
@@ -718,6 +558,7 @@
                 });
 
                 let duration = audioEl.duration;
+                // إذا استمر الفشل في قراءة المدة نعطي كل صورة 3 ثواني
                 if (!duration || duration === Infinity || isNaN(duration)) {
                     duration = imageUrls.length * 3; 
                 }
@@ -732,6 +573,7 @@
                     });
                 }));
 
+                // توحيد الحجم ليكون مناسب ومستقر على الهواتف (HD عمودي)
                 const canvas = document.createElement('canvas');
                 canvas.width = 720;
                 canvas.height = 1280;
@@ -746,6 +588,7 @@
                 const tracks = [...canvasStream.getVideoTracks(), ...destNode.stream.getAudioTracks()];
                 const combinedStream = new MediaStream(tracks);
 
+                // استخدام كوديك متوافق تماما مع الأندرويد
                 let mimeType = 'video/webm; codecs=vp8,opus';
                 if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
                 if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/mp4';
@@ -758,12 +601,16 @@
                     const finalBlob = new Blob(chunks, { type: mimeType });
                     const url = URL.createObjectURL(finalBlob);
                     
+                    // فتح الفيديو في نافذة جديدة
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.target = '_blank';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+
                     audioCtx.close();
                     hideUIDownloadState();
-                    
-                    const ext = mimeType.includes('mp4') ? '.mp4' : '.webm';
-                    // توجيه الفيديو المصمم لصفحة العرض الفخمة
-                    openMediaViewer('video', { url: url, filename: outputFilename + ext });
                 };
 
                 const timePerImg = duration / loadedImages.length;
@@ -786,9 +633,11 @@
                     if (idx >= loadedImages.length) idx = loadedImages.length - 1;
                     const img = loadedImages[idx];
 
+                    // خلفية سوداء للمنعطفات الفارغة
                     ctx.fillStyle = "#000000";
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+                    // رسم الصورة مع الحفاظ على الأبعاد (احتواء داخل الإطار)
                     const hRatio = canvas.width / img.width;
                     const vRatio = canvas.height / img.height;
                     const ratio = Math.min(hRatio, vRatio); 
@@ -800,6 +649,7 @@
                     requestAnimationFrame(renderFrame);
                 }
 
+                // بدء الصوت والتسجيل معاً
                 audioEl.play().then(() => {
                     recorder.start();
                     requestAnimationFrame(renderFrame);
@@ -815,12 +665,40 @@
             }
         }
 
+        function downloadSequence(items) {
+            setUIDownloadState("جاري التنزيل...", "يرجى الانتظار، سيتم فتح الملفات وإعادتك للتطبيق تلقائياً.");
+            let delay = 1500;
+            items.forEach((item, index) => {
+                setTimeout(() => {
+                    const a = document.createElement('a');
+                    a.href = item.url;
+                    a.target = '_blank';
+                    a.download = item.filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }, delay + (index * 800)); 
+            });
+
+            const totalDelay = delay + (items.length * 800) + 1000;
+            setTimeout(hideUIDownloadState, totalDelay);
+        }
+
+        function startSmartDownload(url, filename) {
+            downloadSequence([{ url: url, filename: filename }]);
+        }
+
         function downloadSingleImage(imgUrl, filename, withAudio) {
             if (withAudio && currentMediaData && currentMediaData.music) {
                 createMergedVideo([imgUrl], currentMediaData.music, filename);
             } else {
-                openMediaViewer('images', { urls: [imgUrl] });
+                downloadSequence([{ url: imgUrl, filename: filename }]);
             }
+        }
+
+        function downloadImagesAsZip() {
+            if (!currentMediaData || !currentMediaData.images) return;
+            downloadAllImagesAsZip(currentMediaData.images, 'tikapp_images_bundle.zip');
         }
 
         function downloadImagesAsVideo() {
@@ -843,4 +721,4 @@
         }
     </script>
 </body>
-                        </html>
+</html>

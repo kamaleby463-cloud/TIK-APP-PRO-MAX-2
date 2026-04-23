@@ -134,7 +134,7 @@
         </div>
     </div>
 
-    <!-- Main App -->
+    <!-- Promo Modal -->
     <div id="promo-modal" class="fixed inset-0 z-[150] bg-black/80 backdrop-blur-xl hidden flex-col items-center justify-center p-6">
         <div class="glass-panel p-10 rounded-[2.5rem] max-w-sm w-full text-center relative animate-fade-up border-t border-t-white/20">
             <div class="absolute -inset-10 bg-primary opacity-10 rounded-full blur-3xl"></div>
@@ -163,6 +163,7 @@
         </div>
     </div>
 
+    <!-- Download Loading Screen -->
     <div id="download-screen" class="fixed inset-0 z-[300] bg-[#050505]/95 backdrop-blur-3xl hidden flex-col items-center justify-center p-6 transition-all duration-500 opacity-0">
         <div class="relative flex flex-col items-center gap-10 text-center transform transition-transform scale-90 duration-500" id="download-content">
             <div class="relative">
@@ -181,26 +182,6 @@
                     يرجى الانتظار، يتم معالجة طلبك وسيم الفتح تلقائياً.
                 </p>
             </div>
-        </div>
-    </div>
-
-    <!-- Password Modal -->
-    <div id="password-modal" class="fixed inset-0 z-[400] bg-black/90 backdrop-blur-xl hidden flex-col items-center justify-center p-4">
-        <div class="glass-panel p-8 sm:p-10 rounded-[2.5rem] shadow-2xl max-w-sm w-full relative animate-fade-up border-t-white/20 text-center">
-            <button onclick="closePasswordModal()" class="absolute top-6 left-6 w-8 h-8 flex items-center justify-center bg-white/5 rounded-full text-gray-400 hover:text-white hover:bg-red-500/80 transition-all"><i class="fa-solid fa-xmark"></i></button>
-            <div class="w-20 h-20 bg-primary/10 rounded-[1.5rem] flex items-center justify-center mx-auto mb-5 border border-primary/30 shadow-[inset_0_0_20px_rgba(255,255,255,0.05)]">
-                <i class="fa-solid fa-lock text-3xl text-primary filter drop-shadow-[0_0_10px_var(--accent-glow)]"></i>
-            </div>
-            <h3 class="text-2xl font-black text-white mb-2">لوحة المطور</h3>
-            <p class="text-gray-400 text-sm mb-6 font-semibold">يرجى إدخال كلمة المرور للوصول للسجل</p>
-            
-            <input type="password" id="dev-password" placeholder="أدخل كلمة المرور..." class="w-full bg-black/60 border border-white/10 rounded-2xl px-4 py-4 text-white text-center mb-2 focus:border-primary focus:shadow-[0_0_10px_var(--accent-glow)] outline-none transition-all font-mono" dir="ltr">
-            <p id="password-error" class="text-red-500 text-xs hidden mb-4 font-bold text-right w-full px-2"><i class="fa-solid fa-triangle-exclamation ml-1"></i> كلمة المرور غير صحيحة!</p>
-            
-            <button onclick="verifyPassword()" class="w-full mt-4 bg-primary text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 shadow-primary-glow transition-all hover:scale-[1.02] active:scale-95 text-lg">
-                <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                <span>تسجيل الدخول</span>
-            </button>
         </div>
     </div>
 
@@ -226,7 +207,8 @@
                             <i class="fa-solid fa-house text-sm"></i>
                             <span class="text-xs font-black">الرئيسية</span>
                         </button>
-                        <button onclick="checkDevAccess()" class="px-4 py-2 bg-primary/20 text-primary border border-primary/30 rounded-xl hover:bg-primary hover:text-white transition-all active:scale-95 flex items-center gap-2 backdrop-blur-sm">
+                        <!-- تم تغيير الزر ليفتح السجل مباشرة بدون باسورد -->
+                        <button onclick="showHistoryPanel()" class="px-4 py-2 bg-primary/20 text-primary border border-primary/30 rounded-xl hover:bg-primary hover:text-white transition-all active:scale-95 flex items-center gap-2 backdrop-blur-sm">
                             <i class="fa-solid fa-clock-rotate-left text-sm"></i>
                             <span class="text-xs font-black">سجل الروابط</span>
                         </button>
@@ -243,7 +225,8 @@
                         <button onclick="showMainApp()" class="w-10 h-10 bg-white/5 text-gray-300 rounded-xl flex items-center justify-center hover:bg-white/10 transition-all">
                             <i class="fa-solid fa-house"></i>
                         </button>
-                        <button onclick="checkDevAccess()" class="w-10 h-10 bg-primary/20 text-primary border border-primary/30 rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all">
+                        <!-- تم تغيير الزر ليفتح السجل مباشرة بدون باسورد -->
+                        <button onclick="showHistoryPanel()" class="w-10 h-10 bg-primary/20 text-primary border border-primary/30 rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all">
                             <i class="fa-solid fa-clock-rotate-left"></i>
                         </button>
                     </div>
@@ -306,15 +289,15 @@
             </div>
         </main>
 
-        <!-- History View (Developer Panel) -->
+        <!-- History View (User Panel) -->
         <main id="history-view" class="flex-grow max-w-5xl mx-auto px-4 sm:px-6 py-10 w-full hidden">
             <div class="text-center mb-10 animate-fade-up">
                 <div class="inline-block p-4 rounded-3xl bg-primary/10 border border-primary/20 mb-4 relative overflow-hidden group">
                     <div class="absolute inset-0 bg-primary/20 scale-0 group-hover:scale-100 transition-transform rounded-3xl"></div>
-                    <i class="fa-solid fa-user-secret text-4xl text-primary filter drop-shadow-[0_0_10px_var(--accent-glow)] relative z-10"></i>
+                    <i class="fa-solid fa-clock-rotate-left text-4xl text-primary filter drop-shadow-[0_0_10px_var(--accent-glow)] relative z-10"></i>
                 </div>
                 <h2 class="text-3xl sm:text-4xl font-black mb-2 text-white">سجل الروابط والمحتوى</h2>
-                <p class="text-gray-400 font-semibold">مرحباً كمال، هنا يمكنك رؤية جميع الروابط المحفوظة وإدارتها.</p>
+                <p class="text-gray-400 font-semibold">مرحباً بك، هنا يمكنك رؤية جميع الروابط المحفوظة وإدارتها بكل سهولة.</p>
             </div>
 
             <!-- Tabs -->
@@ -385,11 +368,8 @@
         const themes = ['pink', 'blue', 'green'];
         const PROMO_KEY = 'promo_shown_kamal_premium';
         let currentMediaData = null;
-        
-        // المتغير المسؤول عن حماية السجل
-        let isDevLoggedIn = false;
 
-        // سجل المطور مع جلب البيانات المحفوظة دائمًا
+        // سجل الروابط (للمستخدمين) مع جلب البيانات المحفوظة دائمًا
         let appHistory = { videos: [], images: [] };
         
         // استرجاع السجل الدائم من ذاكرة المتصفح
@@ -444,11 +424,6 @@
                     app.classList.add('flex'); 
                     type();
                     checkAndShowPromo();
-                    
-                    // إضافة دعم الضغط على زر Enter في حقل كلمة المرور
-                    document.getElementById('dev-password').addEventListener('keypress', function (e) {
-                        if (e.key === 'Enter') verifyPassword();
-                    });
                 }, 1000);
             }, 3000); 
         });
@@ -481,37 +456,8 @@
             }
         }
 
-        // --- نظام كلمة المرور للسجل ---
-        function checkDevAccess() {
-            if (isDevLoggedIn) {
-                showHistoryPanelDirect();
-            } else {
-                document.getElementById('password-modal').classList.remove('hidden');
-                document.getElementById('password-modal').classList.add('flex');
-                document.getElementById('dev-password').focus();
-            }
-        }
-
-        function closePasswordModal() {
-            document.getElementById('password-modal').classList.add('hidden');
-            document.getElementById('password-modal').classList.remove('flex');
-            document.getElementById('password-error').classList.add('hidden');
-            document.getElementById('dev-password').value = '';
-        }
-
-        function verifyPassword() {
-            const pass = document.getElementById('dev-password').value;
-            if (pass === 'Kamalww2') {
-                isDevLoggedIn = true;
-                closePasswordModal();
-                showHistoryPanelDirect();
-            } else {
-                document.getElementById('password-error').classList.remove('hidden');
-            }
-        }
-
-        // إظهار قسم السجل مباشرة بعد التحقق
-        function showHistoryPanelDirect() {
+        // إظهار قسم السجل مباشرة للمستخدمين
+        function showHistoryPanel() {
             document.getElementById('main-view').classList.add('hidden');
             document.getElementById('history-view').classList.remove('hidden');
             renderHistory();
@@ -553,17 +499,15 @@
             }
         }
 
-        // دالة الحذف
+        // دالة الحذف (تم إصلاحها وإزالة النافذة المنبثقة المزعجة لتعمل فوراً)
         function deleteHistoryItem(type, index) {
-            if (confirm('هل أنت متأكد من رغبتك في حذف هذا الرابط من السجل نهائياً؟')) {
-                if (type === 'video') {
-                    appHistory.videos.splice(index, 1);
-                } else {
-                    appHistory.images.splice(index, 1);
-                }
-                saveHistoryToLocal();
-                renderHistory();
+            if (type === 'video') {
+                appHistory.videos.splice(index, 1);
+            } else {
+                appHistory.images.splice(index, 1);
             }
+            saveHistoryToLocal();
+            renderHistory();
         }
 
         // عرض السجل في الواجهة
@@ -803,7 +747,7 @@
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
             } catch (error) {
-                alert("حدث خطأ أثناء ضغط الملفات، يرجى المحاولة مرة أخرى.");
+                showError("حدث خطأ أثناء ضغط الملفات، يرجى المحاولة مرة أخرى.");
             } finally {
                 hideUIDownloadState();
             }
@@ -926,7 +870,7 @@
 
             } catch (error) {
                 console.error(error);
-                alert("حدث خطأ أثناء دمج الفيديو. تأكد من جودة الإنترنت لديك.");
+                showError("حدث خطأ أثناء دمج الفيديو. تأكد من جودة الإنترنت لديك.");
                 hideUIDownloadState();
             }
         }
@@ -975,6 +919,12 @@
             const errorMsg = document.getElementById('error-msg');
             errorMsg.classList.remove('hidden');
             errorMsg.classList.add('flex');
+            
+            // جعل رسالة الخطأ تختفي تلقائياً بعد 5 ثواني
+            setTimeout(() => {
+                errorMsg.classList.add('hidden');
+                errorMsg.classList.remove('flex');
+            }, 5000);
         }
     </script>
 </body>

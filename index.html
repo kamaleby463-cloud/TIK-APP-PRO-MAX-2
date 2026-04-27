@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -816,12 +815,37 @@
                 recorder.onstop = () => {
                     const finalBlob = new Blob(chunks, { type: mimeType });
                     const url = URL.createObjectURL(finalBlob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.target = '_blank';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
+                    
+                    // تغيير الكود هنا ليقوم بفتح الفيديو في نافذة جديدة بداخل المتصفح بدلاً من تحميله
+                    const videoWindow = window.open('', '_blank');
+                    if (videoWindow) {
+                        videoWindow.document.write(`
+                            <!DOCTYPE html>
+                            <html lang="ar">
+                            <head>
+                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                <title>عرض الفيديو المدمج</title>
+                                <style>
+                                    body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+                                    video { max-width: 100%; max-height: 100%; outline: none; }
+                                </style>
+                            </head>
+                            <body>
+                                <video src="${url}" controls autoplay playsinline></video>
+                            </body>
+                            </html>
+                        `);
+                        videoWindow.document.close();
+                    } else {
+                        // في حال كانت إعدادات المتصفح تمنع النوافذ المنبثقة، سيتم فتح الرابط كحل بديل
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.target = '_blank';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    }
+                    
                     audioCtx.close();
                     hideUIDownloadState();
                 };
@@ -928,7 +952,4 @@
         }
     </script>
 </body>
-</html>
-
-
-
+    </html>

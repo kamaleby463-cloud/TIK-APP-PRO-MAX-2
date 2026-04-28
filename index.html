@@ -30,6 +30,7 @@
         @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
 
+        /* Typewriter Cursor for Main Title */
         .main-typewriter::after {
             content: '|';
             display: inline-block;
@@ -58,7 +59,7 @@
             animation: shimmer 2.5s infinite;
         }
 
-        /* Themes */
+        /* Themes - Luxurious Gradients */
         .theme-pink { --primary: #e11d48; --primary-dark: #9f1239; --accent-glow: rgba(225, 29, 72, 0.5); --bg-gradient: linear-gradient(145deg, #e11d48, #9f1239); }
         .theme-blue { --primary: #3b82f6; --primary-dark: #1e3a8a; --accent-glow: rgba(59, 130, 246, 0.5); --bg-gradient: linear-gradient(145deg, #3b82f6, #1d4ed8); }
         .theme-green { --primary: #10b981; --primary-dark: #064e3b; --accent-glow: rgba(16, 185, 129, 0.5); --bg-gradient: linear-gradient(145deg, #10b981, #047857); }
@@ -88,12 +89,6 @@
             border-color: var(--primary);
             background-color: rgba(255, 255, 255, 0.05); 
             box-shadow: inset 0 0 20px var(--accent-glow);
-        }
-        
-        .tab-active {
-            background-color: var(--primary);
-            color: white;
-            box-shadow: 0 0 15px var(--accent-glow);
         }
     </style>
 </head>
@@ -131,7 +126,7 @@
         </div>
     </div>
 
-    <!-- Promo Modal -->
+    <!-- Main App -->
     <div id="promo-modal" class="fixed inset-0 z-[150] bg-black/80 backdrop-blur-xl hidden flex-col items-center justify-center p-6">
         <div class="glass-panel p-10 rounded-[2.5rem] max-w-sm w-full text-center relative animate-fade-up border-t border-t-white/20">
             <div class="absolute -inset-10 bg-primary opacity-10 rounded-full blur-3xl"></div>
@@ -160,7 +155,6 @@
         </div>
     </div>
 
-    <!-- Download Loading Screen -->
     <div id="download-screen" class="fixed inset-0 z-[300] bg-[#050505]/95 backdrop-blur-3xl hidden flex-col items-center justify-center p-6 transition-all duration-500 opacity-0">
         <div class="relative flex flex-col items-center gap-10 text-center transform transition-transform scale-90 duration-500" id="download-content">
             <div class="relative">
@@ -176,7 +170,7 @@
             <div class="space-y-4 animate-fade-up" style="animation-delay: 0.2s;">
                 <h3 class="text-4xl font-black text-white italic tracking-wide">جاري التجهيز...</h3>
                 <p class="text-gray-400 text-base font-semibold max-w-[280px] mx-auto leading-relaxed">
-                    يرجى الانتظار، يتم معالجة طلبك وفتح النتيجة في المتصفح تلقائياً.
+                    يرجى الانتظار، يتم معالجة طلبك وسيم الفتح تلقائياً.
                 </p>
             </div>
         </div>
@@ -186,7 +180,7 @@
         <nav class="px-4 py-5 border-b border-white/5 bg-black/40 backdrop-blur-2xl sticky top-0 z-50 transition-all">
             <div class="max-w-5xl mx-auto flex justify-between items-center">
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-primary rounded-[1rem] flex items-center justify-center shadow-primary-glow relative overflow-hidden group cursor-pointer" onclick="showMainApp()">
+                    <div class="w-12 h-12 bg-primary rounded-[1rem] flex items-center justify-center shadow-primary-glow relative overflow-hidden group">
                         <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                         <i class="fa-solid fa-download text-white text-xl relative z-10"></i>
                     </div>
@@ -197,41 +191,19 @@
                             بواسطة كمال
                         </span>
                     </div>
-                    
-                    <div class="hidden md:flex items-center gap-2 mr-4">
-                        <button onclick="showMainApp()" class="px-4 py-2 bg-white/5 text-gray-300 border border-white/10 rounded-xl hover:bg-white/10 hover:text-white transition-all active:scale-95 flex items-center gap-2 backdrop-blur-sm">
-                            <i class="fa-solid fa-house text-sm"></i>
-                            <span class="text-xs font-black">الرئيسية</span>
-                        </button>
-                        <button onclick="showHistoryPanel()" class="px-4 py-2 bg-primary/20 text-primary border border-primary/30 rounded-xl hover:bg-primary hover:text-white transition-all active:scale-95 flex items-center gap-2 backdrop-blur-sm">
-                            <i class="fa-solid fa-clock-rotate-left text-sm"></i>
-                            <span class="text-xs font-black">سجل الروابط</span>
-                        </button>
-                        <button onclick="openSupportModal()" class="px-4 py-2 bg-white/5 text-gray-300 border border-white/10 rounded-xl hover:bg-white/10 hover:text-white transition-all active:scale-95 flex items-center gap-2 backdrop-blur-sm">
-                            <i class="fa-solid fa-headset text-sm"></i>
-                            <span class="text-xs font-black">الدعم</span>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="flex items-center gap-2">
-                    <div class="flex md:hidden items-center gap-2">
-                        <button onclick="showMainApp()" class="w-10 h-10 bg-white/5 text-gray-300 rounded-xl flex items-center justify-center hover:bg-white/10 transition-all">
-                            <i class="fa-solid fa-house"></i>
-                        </button>
-                        <button onclick="showHistoryPanel()" class="w-10 h-10 bg-primary/20 text-primary border border-primary/30 rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all">
-                            <i class="fa-solid fa-clock-rotate-left"></i>
-                        </button>
-                    </div>
-                    <button onclick="toggleTheme()" class="w-12 h-12 sm:w-auto sm:px-5 bg-white/5 text-white rounded-xl border border-white/10 flex items-center justify-center gap-2 hover:bg-white/10 transition-all shadow-lg backdrop-blur-sm group">
-                        <i class="fa-solid fa-palette group-hover:rotate-180 transition-transform duration-500 text-primary"></i>
-                        <span class="text-xs font-black uppercase hidden sm:inline-block">تغيير الثيم</span>
+                    <button onclick="openSupportModal()" class="mr-4 px-4 py-2 bg-white/5 text-gray-300 border border-white/10 rounded-xl hover:bg-white/10 hover:text-white transition-all active:scale-95 flex items-center gap-2 backdrop-blur-sm">
+                        <i class="fa-solid fa-headset text-sm"></i>
+                        <span class="text-xs font-black uppercase hidden sm:block">الدعم</span>
                     </button>
                 </div>
+                <button onclick="toggleTheme()" class="w-12 h-12 sm:w-auto sm:px-5 bg-white/5 text-white rounded-xl border border-white/10 flex items-center justify-center gap-2 hover:bg-white/10 transition-all shadow-lg backdrop-blur-sm group">
+                    <i class="fa-solid fa-palette group-hover:rotate-180 transition-transform duration-500 text-primary"></i>
+                    <span class="text-xs font-black uppercase hidden sm:inline-block">تغيير الثيم</span>
+                </button>
             </div>
         </nav>
 
-        <main id="main-view" class="flex-grow max-w-4xl mx-auto px-4 sm:px-6 py-16 text-center w-full block">
+        <main class="flex-grow max-w-4xl mx-auto px-4 sm:px-6 py-16 text-center w-full">
             <div class="mb-14 animate-fade-up">
                 <h2 id="main-typed-title" class="text-3xl sm:text-5xl font-black mb-3 italic tracking-tight text-transparent bg-clip-text bg-gradient-to-l from-white to-gray-400 min-h-[1.2em] main-typewriter"></h2>
                 <p class="text-gray-400 text-sm sm:text-base font-semibold">تجربة تنزيل <span class="text-primary font-bold">سينمائية وفخمة</span> للوسائط بدون علامات.</p>
@@ -281,31 +253,6 @@
             </div>
         </main>
 
-        <main id="history-view" class="flex-grow max-w-5xl mx-auto px-4 sm:px-6 py-10 w-full hidden">
-            <div class="text-center mb-10 animate-fade-up">
-                <div class="inline-block p-4 rounded-3xl bg-primary/10 border border-primary/20 mb-4 relative overflow-hidden group">
-                    <div class="absolute inset-0 bg-primary/20 scale-0 group-hover:scale-100 transition-transform rounded-3xl"></div>
-                    <i class="fa-solid fa-clock-rotate-left text-4xl text-primary filter drop-shadow-[0_0_10px_var(--accent-glow)] relative z-10"></i>
-                </div>
-                <h2 class="text-3xl sm:text-4xl font-black mb-2 text-white">سجل الروابط والمحتوى</h2>
-                <p class="text-gray-400 font-semibold">مرحباً بك، هنا يمكنك رؤية جميع الروابط المحفوظة وإدارتها بكل سهولة.</p>
-            </div>
-
-            <div class="flex justify-center gap-4 mb-8 animate-fade-up" style="animation-delay: 0.1s;">
-                <button onclick="switchHistoryTab('videos')" id="tab-videos" class="tab-active px-8 py-3 rounded-2xl font-black transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-video"></i>
-                    الفيديوهات
-                </button>
-                <button onclick="switchHistoryTab('images')" id="tab-images" class="bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 px-8 py-3 rounded-2xl font-black transition-all flex items-center gap-2 border border-white/10">
-                    <i class="fa-solid fa-images"></i>
-                    الصور
-                </button>
-            </div>
-
-            <div id="history-videos-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-up" style="animation-delay: 0.2s;"></div>
-            <div id="history-images-container" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-up" style="animation-delay: 0.2s;"></div>
-        </main>
-
         <footer class="py-12 border-t border-white/5 flex flex-col items-center gap-6 mt-auto bg-black/20 backdrop-blur-lg">
             <div class="text-center space-y-2">
                 <p class="text-[10px] font-black uppercase tracking-[0.5em] text-gray-500">Luxury Edition</p>
@@ -321,7 +268,6 @@
         </footer>
     </div>
 
-    <!-- Support Modal -->
     <div id="support-modal" class="fixed inset-0 z-[210] bg-black/80 backdrop-blur-xl hidden flex-col items-center justify-center p-4">
         <div class="glass-panel p-8 sm:p-10 rounded-[2.5rem] shadow-2xl max-w-sm w-full relative animate-fade-up border-t-white/20">
             <button onclick="closeSupportModal()" class="absolute top-6 left-6 w-8 h-8 flex items-center justify-center bg-white/5 rounded-full text-gray-400 hover:text-white hover:bg-red-500/80 transition-all"><i class="fa-solid fa-xmark"></i></button>
@@ -351,15 +297,8 @@
         const themes = ['pink', 'blue', 'green'];
         const PROMO_KEY = 'promo_shown_kamal_premium';
         let currentMediaData = null;
-        let appHistory = { videos: [], images: [] };
-        
-        const savedHistory = localStorage.getItem('kamal_app_history_persistent');
-        if (savedHistory) {
-            try { appHistory = JSON.parse(savedHistory); } catch(e) { console.error("History Load Error"); }
-        }
 
-        function saveHistoryToLocal() { localStorage.setItem('kamal_app_history_persistent', JSON.stringify(appHistory)); }
-
+        // Infinite Looping Typewriter Logic
         const mainTitleElement = document.getElementById('main-typed-title');
         const mainTitleText = "محمل الفيديوهات والصور من تطوير كمال";
         let isDeleting = false;
@@ -367,13 +306,29 @@
 
         function type() {
             const fullTxt = mainTitleText;
-            if (isDeleting) { txt = fullTxt.substring(0, txt.length - 1); } 
-            else { txt = fullTxt.substring(0, txt.length + 1); }
+            
+            if (isDeleting) {
+                txt = fullTxt.substring(0, txt.length - 1);
+            } else {
+                txt = fullTxt.substring(0, txt.length + 1);
+            }
+
             mainTitleElement.textContent = txt;
+
             let typeSpeed = 120;
-            if (isDeleting) typeSpeed /= 2;
-            if (!isDeleting && txt === fullTxt) { typeSpeed = 3000; isDeleting = true; } 
-            else if (isDeleting && txt === '') { isDeleting = false; typeSpeed = 500; }
+
+            if (isDeleting) {
+                typeSpeed /= 2;
+            }
+
+            if (!isDeleting && txt === fullTxt) {
+                typeSpeed = 3000;
+                isDeleting = true;
+            } else if (isDeleting && txt === '') {
+                isDeleting = false;
+                typeSpeed = 500;
+            }
+
             setTimeout(() => type(), typeSpeed);
         }
 
@@ -381,11 +336,13 @@
             setTimeout(() => {
                 const splash = document.getElementById('splash');
                 splash.classList.add('opacity-0');
+                
                 setTimeout(() => {
                     splash.style.display = 'none';
                     const app = document.getElementById('app');
                     app.classList.remove('hidden');
                     app.classList.add('flex'); 
+                    
                     type();
                     checkAndShowPromo();
                 }, 1000);
@@ -393,7 +350,8 @@
         });
 
         function checkAndShowPromo() {
-            if (!localStorage.getItem(PROMO_KEY)) {
+            const hasShown = localStorage.getItem(PROMO_KEY);
+            if (!hasShown) {
                 const promo = document.getElementById('promo-modal');
                 promo.classList.remove('hidden');
                 promo.classList.add('flex');
@@ -410,91 +368,6 @@
             document.body.classList.remove(`theme-${themes[currentThemeIndex]}`);
             currentThemeIndex = (currentThemeIndex + 1) % themes.length;
             document.body.classList.add(`theme-${themes[currentThemeIndex]}`);
-            const activeTab = document.querySelector('.tab-active');
-            if(activeTab) {
-                activeTab.style.backgroundColor = 'var(--primary)';
-                activeTab.style.boxShadow = '0 0 15px var(--accent-glow)';
-            }
-        }
-
-        function showHistoryPanel() {
-            document.getElementById('main-view').classList.add('hidden');
-            document.getElementById('history-view').classList.remove('hidden');
-            renderHistory();
-        }
-
-        function showMainApp() {
-            document.getElementById('history-view').classList.add('hidden');
-            document.getElementById('main-view').classList.remove('hidden');
-            document.getElementById('main-view').classList.add('block');
-        }
-
-        function switchHistoryTab(tabName) {
-            const tabVideos = document.getElementById('tab-videos');
-            const tabImages = document.getElementById('tab-images');
-            const containerVideos = document.getElementById('history-videos-container');
-            const containerImages = document.getElementById('history-images-container');
-
-            [tabVideos, tabImages].forEach(t => {
-                t.className = 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 px-8 py-3 rounded-2xl font-black transition-all flex items-center gap-2 border border-white/10';
-                t.style.backgroundColor = ''; t.style.boxShadow = '';
-            });
-
-            if (tabName === 'videos') {
-                tabVideos.className = 'tab-active px-8 py-3 rounded-2xl font-black transition-all flex items-center gap-2';
-                tabVideos.style.backgroundColor = 'var(--primary)';
-                tabVideos.style.boxShadow = '0 0 15px var(--accent-glow)';
-                containerVideos.classList.remove('hidden'); containerImages.classList.add('hidden');
-            } else {
-                tabImages.className = 'tab-active px-8 py-3 rounded-2xl font-black transition-all flex items-center gap-2';
-                tabImages.style.backgroundColor = 'var(--primary)';
-                tabImages.style.boxShadow = '0 0 15px var(--accent-glow)';
-                containerImages.classList.remove('hidden'); containerVideos.classList.add('hidden');
-            }
-        }
-
-        function deleteHistoryItem(type, index) {
-            if (type === 'video') { appHistory.videos.splice(index, 1); } 
-            else { appHistory.images.splice(index, 1); }
-            saveHistoryToLocal();
-            renderHistory();
-        }
-
-        function renderHistory() {
-            const renderItem = (item, type, index) => `
-                <div class="glass-panel rounded-2xl overflow-hidden border border-white/10 hover:border-primary/50 transition-all group relative text-right flex flex-col h-full">
-                    <div class="h-40 w-full overflow-hidden bg-black relative flex-shrink-0">
-                        <img src="${item.cover}" class="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-all duration-500 group-hover:scale-110" alt="Cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/90 to-transparent"></div>
-                        <div class="absolute bottom-3 right-3 flex items-center gap-2">
-                            <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-[10px] font-bold text-white">${item.author.charAt(0)}</div>
-                            <span class="text-white text-xs font-bold" dir="ltr">@${item.author}</span>
-                        </div>
-                        <div class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] text-white font-bold border border-white/10">${item.time}</div>
-                    </div>
-                    <div class="p-4 flex flex-col flex-grow justify-between">
-                        <p class="text-white text-sm font-semibold line-clamp-2 mb-3 h-10">${item.title}</p>
-                        <div class="flex gap-2 mt-auto">
-                            <a href="${item.originalUrl}" target="_blank" class="flex-1 bg-white/5 border border-white/10 text-gray-300 font-bold py-2 rounded-xl flex items-center justify-center gap-2 hover:bg-primary hover:text-white hover:border-primary transition-all text-xs">
-                                <i class="fa-solid fa-link"></i><span>فتح الأصل</span>
-                            </a>
-                            <button onclick="deleteHistoryItem('${type}', ${index})" class="w-12 bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white rounded-xl flex items-center justify-center transition-all"><i class="fa-solid fa-trash-can"></i></button>
-                        </div>
-                    </div>
-                </div>`;
-            const vC = document.getElementById('history-videos-container');
-            vC.innerHTML = appHistory.videos.length === 0 ? '<div class="col-span-full py-10 text-gray-500">السجل فارغ</div>' : appHistory.videos.map((item, idx) => renderItem(item, 'video', idx)).join('');
-            const iC = document.getElementById('history-images-container');
-            iC.innerHTML = appHistory.images.length === 0 ? '<div class="col-span-full py-10 text-gray-500">السجل فارغ</div>' : appHistory.images.map((item, idx) => renderItem(item, 'image', idx)).join('');
-        }
-
-        function addToHistory(url, data) {
-            const isVideo = !(data.images && data.images.length > 0);
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('ar-EG', { hour: '2-digit', minute:'2-digit' }) + ' - ' + now.toLocaleDateString('ar-EG');
-            const historyItem = { originalUrl: url, title: data.title || 'بدون عنوان', author: data.author.nickname, cover: isVideo ? data.cover : data.images[0], time: timeString };
-            if (isVideo) appHistory.videos.unshift(historyItem); else appHistory.images.unshift(historyItem);
-            saveHistoryToLocal();
         }
 
         async function fetchMedia() {
@@ -502,15 +375,30 @@
             const url = urlInput.value.trim();
             const btnText = document.getElementById('btn-text');
             const btnIcon = document.getElementById('btn-icon');
-            if (!url) { showError('يرجى إدخل الرابط'); return; }
-            btnText.innerText = 'جاري التحليل...'; btnIcon.className = 'fa-solid fa-spinner animate-spin';
+            const errorMsg = document.getElementById('error-msg');
+            const resultDiv = document.getElementById('result');
+            
+            if (!url) { showError('يرجى إدخال الرابط أولاً'); return; }
+
+            btnText.innerText = 'جاري التحليل...';
+            btnIcon.className = 'fa-solid fa-spinner animate-spin';
+            errorMsg.classList.add('hidden');
+            resultDiv.classList.add('hidden');
+
             try {
                 const response = await fetch(`https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`);
                 const res = await response.json();
-                if (res.code === 0 && res.data) { currentMediaData = res.data; renderResult(res.data); addToHistory(url, res.data); } 
-                else { showError('الرابط غير صحيح'); }
-            } catch (err) { showError('خطأ في الاتصال'); } 
-            finally { btnText.innerText = 'تحليل الرابط'; btnIcon.className = 'fa-solid fa-magnifying-glass'; }
+                
+                if (res.code === 0 && res.data) { 
+                    currentMediaData = res.data;
+                    renderResult(res.data); 
+                } 
+                else { showError('الرابط غير صحيح أو المحتوى خاص'); }
+            } catch (err) { showError('حدث خطأ في الاتصال، تأكد من جودة الإنترنت لديك'); } 
+            finally {
+                btnText.innerText = 'تحليل الرابط';
+                btnIcon.className = 'fa-solid fa-magnifying-glass';
+            }
         }
 
         function renderResult(data) {
@@ -518,142 +406,319 @@
             const videoPreview = document.getElementById('preview-video');
             const imagesPreview = document.getElementById('preview-images');
             const downloadBox = document.getElementById('download-box');
+            
             resultDiv.classList.remove('hidden');
-            document.getElementById('media-title').innerText = data.title || 'محتوى تيك توك';
+            document.getElementById('media-title').innerText = data.title || 'محتوى تيك توك مميز';
             document.getElementById('author-name').innerText = `@${data.author.nickname}`;
             document.getElementById('author-avatar').innerText = data.author.nickname.charAt(0);
-            videoPreview.classList.add('hidden'); imagesPreview.classList.add('hidden');
+            
+            videoPreview.classList.add('hidden');
+            imagesPreview.classList.add('hidden');
             downloadBox.innerHTML = '';
 
             if (data.images && data.images.length > 0) {
-                imagesPreview.classList.remove('hidden'); imagesPreview.innerHTML = '';
+                imagesPreview.classList.remove('hidden');
+                imagesPreview.innerHTML = '';
                 data.images.forEach((img, index) => {
                     const div = document.createElement('div');
                     div.className = 'relative flex-none w-full h-full snap-center flex items-center justify-center group p-4';
                     div.innerHTML = `
-                        <img src="${img}" class="w-full h-full object-contain rounded-2xl z-0">
-                        <div class="absolute inset-4 bg-black/70 rounded-2xl opacity-0 group-hover:opacity-100 transition-all backdrop-blur-md flex flex-col items-center justify-center z-10 gap-4">
-                            <button onclick="downloadSingleImage('${img}', 'image_${index + 1}.jpeg', false)" class="bg-primary text-white font-black py-3 px-6 rounded-xl flex items-center gap-3">
-                                <i class="fa-solid fa-image"></i><span>تحميل الصورة</span>
+                        <img src="${img}" class="w-full h-full object-contain rounded-2xl shadow-2xl relative z-0" alt="TikTok Image">
+                        <div class="absolute inset-4 bg-black/70 rounded-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 backdrop-blur-md flex flex-col items-center justify-center z-10 p-4 gap-4">
+                            <button onclick="downloadSingleImage('${img}', 'tikapp_image_${index + 1}.jpeg', false)" class="w-full max-w-[220px] bg-primary text-white font-black py-3 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-105 shadow-primary-glow transform translate-y-4 group-hover:translate-y-0 duration-500">
+                                <i class="fa-solid fa-image text-xl"></i>
+                                <span>تحميل الصورة فقط</span>
                             </button>
-                            <button onclick="downloadSingleImage('${img}', 'video_${index + 1}', true)" class="bg-white/10 border border-white/20 text-white font-black py-3 px-6 rounded-xl flex items-center gap-3">
-                                <i class="fa-solid fa-play"></i><span>عرض كفيديو</span>
+                            <button onclick="downloadSingleImage('${img}', 'tikapp_video_${index + 1}', true)" class="w-full max-w-[220px] bg-white/10 border border-white/20 text-white font-black py-3 rounded-xl flex items-center justify-center gap-3 transition-all hover:scale-105 hover:bg-white/20 transform translate-y-4 group-hover:translate-y-0 duration-500 delay-75">
+                                <i class="fa-solid fa-file-video text-xl"></i>
+                                <span class="text-sm">عرض كفيديو (مع الصوت)</span>
                             </button>
-                        </div>`;
+                        </div>
+                    `;
                     imagesPreview.appendChild(div);
                 });
+
                 downloadBox.innerHTML = `
-                    <button onclick="downloadImagesAsZip()" class="w-full bg-primary text-white font-black py-4 rounded-2xl flex items-center justify-center gap-4 shadow-primary-glow">
-                        <i class="fa-solid fa-file-zipper"></i><span>تحميل الكل (ZIP)</span>
+                    <button onclick="downloadImagesAsZip()" class="w-full bg-primary text-white font-black py-4 rounded-2xl flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95 shadow-primary-glow text-lg group">
+                        <i class="fa-solid fa-file-zipper text-2xl group-hover:-translate-y-1 transition-transform"></i>
+                        <span>تحميل جميع الصور (ملف ZIP واحد)</span>
                     </button>
-                    <button onclick="downloadImagesAsVideo()" class="w-full border-2 border-primary bg-primary/20 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-4 mt-3">
-                        <i class="fa-solid fa-film"></i><span>عرض الألبوم كفيديو</span>
-                    </button>`;
+                    <button onclick="downloadImagesAsVideo()" class="w-full border-2 border-primary bg-primary/20 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95 shadow-primary-glow text-lg group mt-3">
+                        <i class="fa-solid fa-film text-2xl group-hover:-translate-y-1 transition-transform animate-pulse"></i>
+                        <span>عرض جميع الصور كفيديو + الأغنية</span>
+                    </button>
+                    <button onclick="startSmartDownload('${data.music}', 'tikapp_audio.mp3')" class="w-full bg-white/5 border border-white/10 text-white font-black py-3 rounded-2xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all text-sm active:scale-95 backdrop-blur-sm mt-3">
+                        <i class="fa-solid fa-music text-primary"></i>
+                        <span>تحميل الصوت فقط (MP3)</span>
+                    </button>
+                `;
             } else {
-                videoPreview.classList.remove('hidden'); videoPreview.src = data.play || data.wmplay;
+                videoPreview.classList.remove('hidden');
+                videoPreview.src = data.play || data.wmplay;
                 downloadBox.innerHTML = `
-                    <button onclick="startSmartDownload('${data.play || data.wmplay}', 'video.mp4')" class="w-full bg-primary text-white font-black py-5 rounded-2xl flex items-center justify-center gap-4 shadow-primary-glow">
-                        <i class="fa-solid fa-cloud-arrow-down"></i><span>حفظ الفيديو (بدون علامة)</span>
-                    </button>`;
+                    <button onclick="startSmartDownload('${data.play || data.wmplay}', 'tikapp_video.mp4')" class="w-full bg-primary text-white font-black py-5 rounded-2xl flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95 shadow-primary-glow text-lg group">
+                        <i class="fa-solid fa-cloud-arrow-down text-2xl group-hover:-translate-y-1 transition-transform"></i>
+                        <span>حفظ الفيديو (بدون علامة)</span>
+                    </button>
+                    <button onclick="startSmartDownload('${data.music}', 'tikapp_audio.mp3')" class="w-full bg-white/5 border border-white/10 text-white font-black py-4 rounded-2xl flex items-center justify-center gap-3 hover:bg-white/10 transition-all text-sm active:scale-95 backdrop-blur-sm mt-3">
+                        <i class="fa-solid fa-music text-primary"></i>
+                        <span>تحميل الصوت (MP3)</span>
+                    </button>
+                `;
             }
-            setTimeout(() => resultDiv.scrollIntoView({ behavior: 'smooth' }), 200);
+            setTimeout(() => resultDiv.scrollIntoView({ behavior: 'smooth', block: 'start' }), 200);
         }
 
         function setUIDownloadState(title, desc) {
-            document.querySelector('#download-screen h3').innerText = title;
-            document.querySelector('#download-screen p').innerText = desc;
-            const ds = document.getElementById('download-screen');
-            ds.classList.remove('hidden'); ds.classList.add('flex');
-            setTimeout(() => { ds.classList.remove('opacity-0'); }, 50);
+            document.querySelector('#download-screen h3').innerText = title || "جاري التجهيز...";
+            document.querySelector('#download-screen p').innerText = desc || "يرجى الانتظار، يتم معالجة طلبك...";
+            const downloadScreen = document.getElementById('download-screen');
+            const downloadContent = document.getElementById('download-content');
+            downloadScreen.classList.remove('hidden');
+            downloadScreen.classList.add('flex');
+            setTimeout(() => {
+                downloadScreen.classList.remove('opacity-0');
+                downloadContent.classList.remove('scale-90');
+                downloadContent.classList.add('scale-100');
+            }, 50);
         }
 
         function hideUIDownloadState() {
-            const ds = document.getElementById('download-screen');
-            ds.classList.add('opacity-0');
-            setTimeout(() => { ds.classList.add('hidden'); ds.classList.remove('flex'); }, 500);
+            const downloadScreen = document.getElementById('download-screen');
+            const downloadContent = document.getElementById('download-content');
+            downloadScreen.classList.add('opacity-0');
+            downloadContent.classList.remove('scale-100');
+            downloadContent.classList.add('scale-90');
+            setTimeout(() => {
+                downloadScreen.classList.add('hidden');
+                downloadScreen.classList.remove('flex');
+            }, 500);
         }
 
         async function fetchMediaBlob(url) {
-            try { const res = await fetch(url); return await res.blob(); } 
-            catch { const res = await fetch('https://corsproxy.io/?' + encodeURIComponent(url)); return await res.blob(); }
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("Fetch Error");
+                return await res.blob();
+            } catch (error) {
+                const proxy = 'https://corsproxy.io/?' + encodeURIComponent(url);
+                const res = await fetch(proxy);
+                return await res.blob();
+            }
         }
 
         async function downloadAllImagesAsZip(imageUrls, filename) {
-            setUIDownloadState("جاري التجميع...", "يتم الآن تجميع الصور في ملف واحد...");
+            setUIDownloadState("جاري ضغط الملفات...", "يتم الآن تجميع وضغط جميع الصور في ملف ZIP واحد لسهولة التحميل.");
             try {
                 const zip = new JSZip();
                 for (let i = 0; i < imageUrls.length; i++) {
                     const blob = await fetchMediaBlob(imageUrls[i]);
-                    zip.file(`image_${i + 1}.jpeg`, blob);
+                    zip.file(`tikapp_image_${i + 1}.jpeg`, blob);
                 }
                 const content = await zip.generateAsync({ type: "blob" });
                 const url = URL.createObjectURL(content);
-                const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
-            } finally { hideUIDownloadState(); }
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (error) {
+                alert("حدث خطأ أثناء ضغط الملفات، يرجى المحاولة مرة أخرى.");
+            } finally {
+                hideUIDownloadState();
+            }
         }
 
+        // تم تحديث الدالة لمعالجة أخطاء الفيديو للأندرويد وتوحيد أبعاد الشاشة
         async function createMergedVideo(imageUrls, audioUrl, outputFilename) {
-            setUIDownloadState("جاري المعالجة...", "يتم دمج الوسائط وفتح الفيديو في المتصفح...");
+            setUIDownloadState("جاري تصميم الفيديو...", "يتم الآن دمج الصور مع المقطع الصوتي... قد يستغرق هذا بعض الوقت لضمان جودة الفيديو.");
+            
             try {
                 const audioBlob = await fetchMediaBlob(audioUrl);
                 const audioObjUrl = URL.createObjectURL(audioBlob);
                 const audioEl = new Audio(audioObjUrl);
-                await new Promise(r => { audioEl.onloadedmetadata = r; audioEl.load(); });
-                let duration = audioEl.duration || imageUrls.length * 3;
-                const loadedImages = await Promise.all(imageUrls.map(async url => {
-                    const b = await fetchMediaBlob(url);
-                    return new Promise(r => { const img = new Image(); img.onload = () => r(img); img.src = URL.createObjectURL(b); });
+                
+                // التأكد من استخراج مدة الصوت بشكل صحيح على الأندرويد
+                await new Promise((resolve) => {
+                    audioEl.onloadedmetadata = () => {
+                        if (audioEl.duration === Infinity || isNaN(audioEl.duration)) {
+                            audioEl.currentTime = 1e101; 
+                            audioEl.ontimeupdate = () => {
+                                audioEl.ontimeupdate = null;
+                                audioEl.currentTime = 0;
+                                resolve();
+                            }
+                        } else {
+                            resolve();
+                        }
+                    };
+                    audioEl.load();
+                });
+
+                let duration = audioEl.duration;
+                // إذا استمر الفشل في قراءة المدة نعطي كل صورة 3 ثواني
+                if (!duration || duration === Infinity || isNaN(duration)) {
+                    duration = imageUrls.length * 3; 
+                }
+
+                const imageBlobs = await Promise.all(imageUrls.map(url => fetchMediaBlob(url)));
+                const loadedImages = await Promise.all(imageBlobs.map(blob => {
+                    return new Promise((res, rej) => {
+                        const img = new Image();
+                        img.onload = () => res(img);
+                        img.onerror = rej;
+                        img.src = URL.createObjectURL(blob);
+                    });
                 }));
-                const canvas = document.createElement('canvas'); canvas.width = 720; canvas.height = 1280;
+
+                // توحيد الحجم ليكون مناسب ومستقر على الهواتف (HD عمودي)
+                const canvas = document.createElement('canvas');
+                canvas.width = 720;
+                canvas.height = 1280;
                 const ctx = canvas.getContext('2d');
+
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                const source = audioCtx.createMediaElementSource(audioEl);
-                const dest = audioCtx.createMediaStreamDestination();
-                source.connect(dest);
-                const stream = canvas.captureStream(30);
-                const combined = new MediaStream([...stream.getVideoTracks(), ...dest.stream.getAudioTracks()]);
-                const recorder = new MediaRecorder(combined, { mimeType: 'video/webm' });
+                const sourceNode = audioCtx.createMediaElementSource(audioEl);
+                const destNode = audioCtx.createMediaStreamDestination();
+                sourceNode.connect(destNode);
+
+                const canvasStream = canvas.captureStream(30);
+                const tracks = [...canvasStream.getVideoTracks(), ...destNode.stream.getAudioTracks()];
+                const combinedStream = new MediaStream(tracks);
+
+                // استخدام كوديك متوافق تماما مع الأندرويد
+                let mimeType = 'video/webm; codecs=vp8,opus';
+                if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/webm';
+                if (!MediaRecorder.isTypeSupported(mimeType)) mimeType = 'video/mp4';
+
+                const recorder = new MediaRecorder(combinedStream, { mimeType });
                 const chunks = [];
-                recorder.ondataavailable = e => chunks.push(e.data);
+                recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+
                 recorder.onstop = () => {
-                    const finalBlob = new Blob(chunks, { type: 'video/mp4' });
+                    const finalBlob = new Blob(chunks, { type: mimeType });
                     const url = URL.createObjectURL(finalBlob);
-                    // فتح الفيديو في المتصفح مثل الفيديوهات العادية
-                    window.open(url, '_blank');
-                    audioCtx.close(); hideUIDownloadState();
+                    
+                    // فتح الفيديو في نافذة جديدة
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.target = '_blank';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+
+                    audioCtx.close();
+                    hideUIDownloadState();
                 };
+
                 const timePerImg = duration / loadedImages.length;
-                let start = null;
-                function draw(t) {
-                    if (!start) start = t;
-                    const elapsed = (t - start) / 1000;
-                    if (elapsed >= duration) { recorder.stop(); audioEl.pause(); return; }
+                let startTime = null;
+                let isRecording = true;
+
+                function renderFrame(time) {
+                    if (!isRecording) return;
+                    if (!startTime) startTime = time;
+                    const elapsed = (time - startTime) / 1000;
+
+                    if (elapsed >= duration) {
+                        isRecording = false;
+                        recorder.stop();
+                        audioEl.pause();
+                        return;
+                    }
+
                     let idx = Math.floor(elapsed / timePerImg);
                     if (idx >= loadedImages.length) idx = loadedImages.length - 1;
                     const img = loadedImages[idx];
-                    ctx.fillStyle = "#000"; ctx.fillRect(0, 0, 720, 1280);
-                    const ratio = Math.min(720 / img.width, 1280 / img.height);
-                    ctx.drawImage(img, (720 - img.width * ratio) / 2, (1280 - img.height * ratio) / 2, img.width * ratio, img.height * ratio);
-                    requestAnimationFrame(draw);
+
+                    // خلفية سوداء للمنعطفات الفارغة
+                    ctx.fillStyle = "#000000";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    // رسم الصورة مع الحفاظ على الأبعاد (احتواء داخل الإطار)
+                    const hRatio = canvas.width / img.width;
+                    const vRatio = canvas.height / img.height;
+                    const ratio = Math.min(hRatio, vRatio); 
+                    const centerShift_x = (canvas.width - img.width * ratio) / 2;
+                    const centerShift_y = (canvas.height - img.height * ratio) / 2;
+
+                    ctx.drawImage(img, 0, 0, img.width, img.height, centerShift_x, centerShift_y, img.width * ratio, img.height * ratio);
+
+                    requestAnimationFrame(renderFrame);
                 }
-                audioEl.play().then(() => { recorder.start(); requestAnimationFrame(draw); });
-            } catch (e) { showError("حدث خطأ"); hideUIDownloadState(); }
+
+                // بدء الصوت والتسجيل معاً
+                audioEl.play().then(() => {
+                    recorder.start();
+                    requestAnimationFrame(renderFrame);
+                }).catch(e => {
+                    recorder.start();
+                    requestAnimationFrame(renderFrame);
+                });
+
+            } catch (error) {
+                console.error(error);
+                alert("حدث خطأ أثناء دمج الفيديو. تأكد من جودة الإنترنت لديك.");
+                hideUIDownloadState();
+            }
         }
 
         function downloadSequence(items) {
-            setUIDownloadState("جاري التحميل...", "يتم الآن فتح الملفات...");
-            items.forEach((item, i) => { setTimeout(() => { const a = document.createElement('a'); a.href = item.url; a.target = '_blank'; a.download = item.filename; a.click(); }, 1000 + i * 500); });
-            setTimeout(hideUIDownloadState, 2000 + items.length * 500);
+            setUIDownloadState("جاري التنزيل...", "يرجى الانتظار، سيتم فتح الملفات وإعادتك للتطبيق تلقائياً.");
+            let delay = 1500;
+            items.forEach((item, index) => {
+                setTimeout(() => {
+                    const a = document.createElement('a');
+                    a.href = item.url;
+                    a.target = '_blank';
+                    a.download = item.filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }, delay + (index * 800)); 
+            });
+
+            const totalDelay = delay + (items.length * 800) + 1000;
+            setTimeout(hideUIDownloadState, totalDelay);
         }
 
-        function startSmartDownload(url, filename) { downloadSequence([{ url, filename }]); }
-        function downloadSingleImage(imgUrl, filename, withAudio) { if (withAudio && currentMediaData?.music) createMergedVideo([imgUrl], currentMediaData.music, filename); else downloadSequence([{ url: imgUrl, filename: filename }]); }
-        function downloadImagesAsZip() { if (currentMediaData?.images) downloadAllImagesAsZip(currentMediaData.images, 'bundle.zip'); }
-        function downloadImagesAsVideo() { if (currentMediaData?.images && currentMediaData?.music) createMergedVideo(currentMediaData.images, currentMediaData.music, 'video'); }
+        function startSmartDownload(url, filename) {
+            downloadSequence([{ url: url, filename: filename }]);
+        }
+
+        function downloadSingleImage(imgUrl, filename, withAudio) {
+            if (withAudio && currentMediaData && currentMediaData.music) {
+                createMergedVideo([imgUrl], currentMediaData.music, filename);
+            } else {
+                downloadSequence([{ url: imgUrl, filename: filename }]);
+            }
+        }
+
+        function downloadImagesAsZip() {
+            if (!currentMediaData || !currentMediaData.images) return;
+            downloadAllImagesAsZip(currentMediaData.images, 'tikapp_images_bundle.zip');
+        }
+
+        function downloadImagesAsVideo() {
+            if (!currentMediaData || !currentMediaData.images || !currentMediaData.music) return;
+            createMergedVideo(currentMediaData.images, currentMediaData.music, 'tikapp_slideshow_video');
+        }
+
         function openSupportModal() { document.getElementById('support-modal').classList.remove('hidden'); document.getElementById('support-modal').classList.add('flex'); }
         function closeSupportModal() { document.getElementById('support-modal').classList.add('hidden'); document.getElementById('support-modal').classList.remove('flex'); }
-        function sendSupportMessage() { window.open(`https://wa.me/qr/M53QU6UR7ZSZM1?text=أهلاً كمال`, '_blank'); closeSupportModal(); }
-        function showError(text) { const e = document.getElementById('error-msg'); document.getElementById('error-text').innerText = text; e.classList.remove('hidden'); e.classList.add('flex'); setTimeout(() => e.classList.add('hidden'), 5000); }
+        function sendSupportMessage() {
+            const selectedIssue = document.querySelector('input[name="issue"]:checked').value;
+            window.open(`https://wa.me/qr/M53QU6UR7ZSZM1?text=${encodeURIComponent('أهلاً كمال، أواجه مشكلة في تطبيق TIK-APP: ' + selectedIssue)}`, '_blank');
+            closeSupportModal();
+        }
+        function showError(text) {
+            document.getElementById('error-text').innerText = text;
+            const errorMsg = document.getElementById('error-msg');
+            errorMsg.classList.remove('hidden');
+            errorMsg.classList.add('flex');
+        }
     </script>
 </body>
 </html>

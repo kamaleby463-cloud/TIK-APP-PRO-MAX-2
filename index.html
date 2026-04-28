@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -206,7 +207,6 @@
                             <i class="fa-solid fa-house text-sm"></i>
                             <span class="text-xs font-black">الرئيسية</span>
                         </button>
-                        <!-- تم تغيير الزر ليفتح السجل مباشرة بدون باسورد -->
                         <button onclick="showHistoryPanel()" class="px-4 py-2 bg-primary/20 text-primary border border-primary/30 rounded-xl hover:bg-primary hover:text-white transition-all active:scale-95 flex items-center gap-2 backdrop-blur-sm">
                             <i class="fa-solid fa-clock-rotate-left text-sm"></i>
                             <span class="text-xs font-black">سجل الروابط</span>
@@ -224,7 +224,6 @@
                         <button onclick="showMainApp()" class="w-10 h-10 bg-white/5 text-gray-300 rounded-xl flex items-center justify-center hover:bg-white/10 transition-all">
                             <i class="fa-solid fa-house"></i>
                         </button>
-                        <!-- تم تغيير الزر ليفتح السجل مباشرة بدون باسورد -->
                         <button onclick="showHistoryPanel()" class="w-10 h-10 bg-primary/20 text-primary border border-primary/30 rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all">
                             <i class="fa-solid fa-clock-rotate-left"></i>
                         </button>
@@ -816,34 +815,26 @@
                     const finalBlob = new Blob(chunks, { type: mimeType });
                     const url = URL.createObjectURL(finalBlob);
                     
-                    // تغيير الكود هنا ليقوم بفتح الفيديو في نافذة جديدة بداخل المتصفح بدلاً من تحميله
-                    const videoWindow = window.open('', '_blank');
-                    if (videoWindow) {
-                        videoWindow.document.write(`
-                            <!DOCTYPE html>
-                            <html lang="ar">
-                            <head>
-                                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                                <title>عرض الفيديو المدمج</title>
-                                <style>
-                                    body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
-                                    video { max-width: 100%; max-height: 100%; outline: none; }
-                                </style>
-                            </head>
-                            <body>
-                                <video src="${url}" controls autoplay playsinline></video>
-                            </body>
-                            </html>
-                        `);
-                        videoWindow.document.close();
-                    } else {
-                        // في حال كانت إعدادات المتصفح تمنع النوافذ المنبثقة، سيتم فتح الرابط كحل بديل
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.target = '_blank';
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
+                    // فتح الفيديو المدمج في المشغل الأساسي للتطبيق كما يفتح الفيديو العادي
+                    const videoPreview = document.getElementById('preview-video');
+                    const imagesPreview = document.getElementById('preview-images');
+                    const downloadBox = document.getElementById('download-box');
+                    
+                    if (imagesPreview) imagesPreview.classList.add('hidden');
+                    if (videoPreview) {
+                        videoPreview.src = url;
+                        videoPreview.classList.remove('hidden');
+                        videoPreview.play().catch(e => console.log('Autoplay prevented'));
+                    }
+
+                    // إظهار زر التحميل بنفس طريقة التطبيق الأساسية
+                    if (downloadBox) {
+                        downloadBox.innerHTML = `
+                            <button onclick="startSmartDownload('${url}', '${outputFilename}.mp4')" class="w-full bg-primary text-white font-black py-5 rounded-2xl flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-95 shadow-primary-glow text-lg group">
+                                <i class="fa-solid fa-cloud-arrow-down text-2xl group-hover:-translate-y-1 transition-transform"></i>
+                                <span>حفظ الفيديو (بعد الدمج)</span>
+                            </button>
+                        `;
                     }
                     
                     audioCtx.close();
@@ -952,4 +943,7 @@
         }
     </script>
 </body>
-    </html>
+</html>
+
+
+
